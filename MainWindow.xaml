@@ -1,0 +1,208 @@
+﻿<Window x:Class="TheBluePrinter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TheBluePrinter"
+        mc:Ignorable="d"
+        Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="250" MinHeight="220">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+        <TabControl Background="#FFD9D3BF" BorderBrush="#00A65757" Foreground="White" Grid.ColumnSpan="2">
+            <TabItem Header="Generate Printer" Background="#FFE5E5E5" Foreground="#FF3D659B" FontWeight="Bold" Height="35" FontSize="16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="87*"/>
+                        <ColumnDefinition Width="181*"/>
+                        <ColumnDefinition MinWidth="100" MaxWidth="300" Width="150*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Background="#FF3D659B" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="200"/>
+                            <RowDefinition Height="24"/>
+                        </Grid.RowDefinitions>
+                        <TabControl Grid.Row="0" TabStripPlacement="Bottom">
+                            <TabItem Header="Image" Foreground="#FF3D659B">
+                                <Grid>
+                                    <Label Content="Select a source image on the right side" IsEnabled="False" Foreground="#FF3D659B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image x:Name="UserImagePreview" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Preview" Foreground="#FF3D659B">
+                                <Grid>
+                                    <Label Content="Click &quot;Generate Preview&quot; below" IsEnabled="False" Foreground="#FF3D659B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image x:Name="PreviewGeneratedImage"/>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                        <Grid Grid.Row="1" Margin="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel HorizontalAlignment="Left" Width="250" Margin="0,28,0,0">
+
+                                <Button Height="30" Content="Generate Printer" Foreground="#FF3D659B"/>
+                                <Rectangle Height="15"/>
+                                <Button Height="30" Content="Generate Preview" Foreground="#FF3D659B"/>
+                                <Label Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF"/>
+                                <Slider Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
+                                <Label Content="Warning! High Values can generate huge images" Foreground="Red" FontSize="10" Height="25" ToolTip="The Icon resolution will be multiplied by your image size.  If your image is larger than 64x64 I would recommend a lower icon size for the preview image."/>
+                            </StackPanel>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Height="30" Content="Result blueprint" Foreground="#FFD9D3BF"/>
+                                <Button Content="Copy" Foreground="#FF3D659B" MinWidth="45" MaxWidth="100" HorizontalAlignment="Right"/>
+
+                                <TextBox Grid.Row="1" IsReadOnly="True" IsUndoEnabled="False" Text="test"/>
+                            </Grid>
+
+                        </Grid>
+
+                    </Grid>
+                    <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="8,4,8,4" Background="Transparent">
+
+                            <TabControl Height="160" Background="#FF3D659B">
+
+                                <TabItem Header="Image" IsSelected="True">
+                                    <StackPanel>
+                                        <Label Height="30" Content="Image Source Path" Foreground="#FFD9D3BF" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
+                                        <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text=""/>
+                                        <Button Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath"/>
+                                    </StackPanel>
+                                </TabItem>
+                                <TabItem Header="icon" IsSelected="True">
+                                    <StackPanel>
+                                        <Label Height="30" Content="Icon Source Path" Foreground="#FFD9D3BF" ToolTip="The path to the factorio icon file you want converted.  This will automatically format the image to use only the resolution selected below"/>
+                                        <TextBox x:Name="IconImageSourcePathTextBox" Height="30"  Text=""/>
+                                        <Button Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath"/>
+                                        <Grid >
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF" ToolTip="Which resolution from the icons mipmaps you want to use"/>
+                                            <Slider Grid.Column="1" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
+
+                                        </Grid>
+
+                                    </StackPanel>
+                                </TabItem>
+
+                            </TabControl>
+                            <Label Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images."/>
+                            <TextBox Height="30"  Text="" BorderThickness="1"/>
+                            <Button Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B"/>
+                            <Label Height="30" Content="Inserter Type" Foreground="#FF3D659B" ToolTip="inserter type that the printer will use.  you dont usually need anything besides a regular inserter."/>
+                            <ComboBox ToolTip="inserter type that the printer will use.  you dont usually need anything besides a regular inserter.">
+                                <ComboBoxItem Content="Inserter" IsSelected="True"/>
+                                <ComboBoxItem Content="Fast-Inserter"/>
+                                <ComboBoxItem Content="Stack-Inserter"/>
+                            </ComboBox>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Item Selector" Background="#FFE5E5E5" BorderBrush="#FFACACAC" Foreground="#FF3D659B" FontWeight="Bold" Height="35" FontSize="16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="91*"/>
+                        <ColumnDefinition Width="745*"/>
+                    </Grid.ColumnDefinitions>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Convert Blueprint" Background="#FFE5E5E5" BorderBrush="#FFACACAC" Foreground="#FF3D659B" FontWeight="Bold" Height="35" FontSize="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition MaxHeight="50"/>
+                        <RowDefinition Height="*"/>
+
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="BluePrint" Grid.Column="0" FontSize="24" FontWeight="Bold" Foreground="#FF3D659B" HorizontalAlignment="Center" ToolTip="Place a blueprint string from factorio in the text box below and click &quot;Convert to Json&quot; to make its data readable"/>
+                        <Label Content="JSON" Grid.Column="2" FontSize="24" FontWeight="Bold" Foreground="#FF3D659B" HorizontalAlignment="Center" SnapsToDevicePixels="True"/>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <RichTextBox Grid.Column="0"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition MinHeight="120"/>
+                                <RowDefinition MinHeight="40"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0">
+                                <Button Height="40" Foreground="#FF3D659B" Content="→ Convert to Json →" FontWeight="Bold" FontSize="16" BorderBrush="#FF3D659B" ToolTip="Converts a blueprint string from the left text box into a Json string in the right box"/>
+                                <Button Height="40" Foreground="#FF3D659B" Content="← Convert to Blueprint ←" FontWeight="Bold" FontSize="16" BorderBrush="#FF3D659B"/>
+                                <Grid Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="Revert" FontSize="16" Foreground="#FF3D659B"/>
+                                    <Button Grid.Column="2" Content="Revert" FontSize="16" Foreground="#FF3D659B"/>
+                                </Grid>
+
+                            </StackPanel>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="40"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Grid.Row="1" Content="Copy" Foreground="#FF3D659B"/>
+                                <Button Grid.Column="0" Grid.Row="2" Content="paste" Foreground="#FF3D659B"/>
+                                <Button Grid.Column="2" Grid.Row="1" Content="Copy" Foreground="#FF3D659B"/>
+                                <Button Grid.Column="2" Grid.Row="2" Content="Paste" Foreground="#FF3D659B"/>
+                            </Grid>
+                        </Grid>
+                        <RichTextBox Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem  Header="Application Settings" FontWeight="Bold" FontSize="16" Foreground="#FF3D659B">
+
+
+            </TabItem>
+
+
+        </TabControl>
+        <Grid Grid.Row="2" Background="#FF171B1F">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content=">" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center" Height="25" Foreground="White"/>
+            <Label Grid.Column="1" Content="Bottem Text" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="25" Foreground="White"/>
+            <Button Grid.Column="2" Content="▽" FontSize="16"/>
+        </Grid>
+
+    </Grid>
+</Window>
