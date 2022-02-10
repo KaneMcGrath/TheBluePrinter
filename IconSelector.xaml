@@ -5,14 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TheBluePrinter"
         mc:Ignorable="d"
-        Title="IconSelector" Height="430" Width="430">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <WrapPanel>
-            
-        </WrapPanel>
+        Title="Select an Item" Height="430" Width="630">
+    <Grid Background="#FFD9D3BF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <Rectangle Grid.Column="1" Fill="#FF3D659B"/>
+        <Grid Background="#FFD9D3BF">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+        
+
+            <TextBox Margin="5"/>
+            <Label Content="🔍" HorizontalAlignment="Right" Margin="5" FontSize="24" FontWeight="Bold"/>
+            <ScrollViewer Grid.Row="1">
+                <StackPanel x:Name="IconSelectorStackPanel">
+                    
+                    
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
+    
 </Window>

@@ -5,18 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TheBluePrinter"
         mc:Ignorable="d"
-        Title="ConsoleWindow" Height="450" Width="386.12">
+        Title="ConsoleWindow" Height="450" Width="386.12" Closed="ConsoleWindowClosed" Closing="OnClosing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Visible">
-            <StackPanel>
+        <ScrollViewer x:Name="ConsoleLogScrollViewer"  Grid.Row="0" VerticalScrollBarVisibility="Auto" MouseEnter="Testt">
+            <StackPanel x:Name="ConsoleLogStackPanel" VerticalAlignment="Bottom">
                 
             </StackPanel>
         </ScrollViewer>
-            
+        
+        
         
         <Grid Grid.Row="1" Background="#FF171B1F">
             <Grid.ColumnDefinitions>
@@ -24,7 +25,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Content=">" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center" Height="25" Foreground="White"/>
-            <Label Grid.Column="1" Content="Bottem Text" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="25" Foreground="White"/>
+            <Label x:Name="LogTextLatestConsole" Grid.Column="1" Content="Bottem Text" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="25" Foreground="White"/>
             
         </Grid>
     </Grid>
