@@ -15,7 +15,7 @@ namespace TheBluePrinter
     class GeneratePrinter
     {
         
-        private static string ImageSourcePath = "";
+        public static string ImageSourcePath = "";
         private static BitmapImage ImagePreview;
         private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
 
@@ -35,6 +35,8 @@ namespace TheBluePrinter
             }
 
         }
+
+        
 
         /// <summary>
         /// Called every time text is entered into the Image source path text box

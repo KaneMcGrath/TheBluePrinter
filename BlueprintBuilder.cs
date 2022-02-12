@@ -141,7 +141,7 @@ namespace TheBluePrinter
         /// <summary>
         /// Main function to determin positions of all entities in the blueprint and how they connect to each other
         /// </summary>
-        /// <param name="idMap"></param>
+        /// <param name="idMap">Takes a 2d array containing item ids which map to their index in the allItemsList</param>
         /// <returns></returns>
         public static List<object> BuildImageAssembler(int[,] idMap)
         {

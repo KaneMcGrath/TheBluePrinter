@@ -17,6 +17,13 @@ namespace TheBluePrinter
     {
         public static List<string> lastUsedItems = new List<string>();
 
+
+        /// <summary>
+        /// Determins what Items should be placed where and saves their index in the allItems list into a 2d array
+        /// This is like a chain of hacks that eventually works, should clean this up later but I probably wont.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static int[,] CreateItemImage(Bitmap input)
         {
 

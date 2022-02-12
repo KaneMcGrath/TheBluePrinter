@@ -188,6 +188,7 @@ namespace TheBluePrinter
     /// <summary>
     /// Stores most of the resources used for the application
     /// not including settings
+    /// probably depracated now but it was fun while it lasted
     /// </summary>
     static class Resources
     {
@@ -351,6 +352,10 @@ namespace TheBluePrinter
                 ItemLibrary.Add(Name, this);
                 Item.AllItems.Add(this);
             }
+            if (!ItemColorLookup.ContainsKey(AverageColor))
+            {
+                ItemColorLookup.Add(AverageColor, Name);
+            }
         }
         
         public Item(string Name, string IconPath, string[] Flags, int StackSize, System.Drawing.Color AverageColor, Bitmap Icon)
@@ -364,7 +369,10 @@ namespace TheBluePrinter
             Log.New("Adding " + Name + " To Library");
             ItemLibrary.Add(Name, this);
             Item.AllItems.Add(this);
-
+            if (!ItemColorLookup.ContainsKey(AverageColor))
+            {
+                ItemColorLookup.Add(AverageColor, Name);
+            }
         }
 
         public override string ToString()

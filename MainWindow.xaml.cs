@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -269,6 +270,12 @@ namespace TheBluePrinter
         private void Key_Up(object sender, KeyEventArgs e)
         {
             IM.KeyUp(e.Key);
+        }
+
+        private void GeneratePrinterOnClick(object sender, RoutedEventArgs e)
+        {
+            Bitmap image = new Bitmap(GeneratePrinter.ImageSourcePath);
+            ResultTextBox.Text = BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)));
         }
     }
 }
