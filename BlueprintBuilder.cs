@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
-
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,7 +8,6 @@ namespace TheBluePrinter
 {
     /// <summary>
     /// Warning! this code and almost all of the following code is very filthy
-    /// Do somthing better
     /// </summary>
     public class BlueprintBuilder
     {
@@ -19,8 +17,29 @@ namespace TheBluePrinter
         /// </summary>
         /// <param name="objects"></param>
         /// <returns></returns>
-        public static string BuildBlueprint(List<object> objects)
+        public static string BuildBlueprint(List<object> objects, int BeltTier = 2)
         {
+            string beltType = "express-transport-belt";
+            string underGroundType = "express-underground-belt";
+            string splitterType = "express-splitter";
+            if (BeltTier == 0)
+            {
+                beltType = "transport-belt";
+                underGroundType = "underground-belt";
+                splitterType = "splitter";
+            }
+            else if (BeltTier == 1)
+            {
+                beltType = "fast-transport-belt";
+                underGroundType = "fast-underground-belt";
+                splitterType = "fast-splitter";
+            }
+            else if (BeltTier == 2)
+            {
+                beltType = "express-transport-belt";
+                underGroundType = "express-underground-belt";
+                splitterType = "express-splitter";
+            }
 
             List<Blueprint.entity> allEntities = new List<Blueprint.entity>();
             Dictionary<object, Blueprint.entity> connectionLookup = new Dictionary<object, Blueprint.entity>();
@@ -37,7 +56,7 @@ namespace TheBluePrinter
                 if (o.GetType() == typeof(Belt))
                 {
                     Belt belt = (Belt)o;
-                    Blueprint.entity b = new Blueprint.entity("express-transport-belt", new Blueprint.entityComponent[] { belt.position.AsBlueprintPosition, new Blueprint.direction(belt.rotation) });
+                    Blueprint.entity b = new Blueprint.entity(beltType, new Blueprint.entityComponent[] { belt.position.AsBlueprintPosition, new Blueprint.direction(belt.rotation) });
                     allEntities.Add(b);
                     connectionLookup.Add(belt, b);
                 }
@@ -69,12 +88,12 @@ namespace TheBluePrinter
                 if (o.GetType() == typeof(UnderGround))
                 {
                     UnderGround U = (UnderGround)o;
-                    allEntities.Add(new Blueprint.entity("express-underground-belt", new Blueprint.entityComponent[] { U.position.AsBlueprintPosition, new Blueprint.direction(U.rotation), new Blueprint.type(U.TFinputOrOutput) }));
+                    allEntities.Add(new Blueprint.entity(underGroundType, new Blueprint.entityComponent[] { U.position.AsBlueprintPosition, new Blueprint.direction(U.rotation), new Blueprint.type(U.TFinputOrOutput) }));
                 }
                 if (o.GetType() == typeof(Splitter))
                 {
                     Splitter S = (Splitter)o;
-                    allEntities.Add(new Blueprint.entity("express-splitter", new Blueprint.entityComponent[] { S.position.AsBlueprintPosition, new Blueprint.direction(S.rotation), new Blueprint.input_priority(S.input_priority ? "left" : "right") }));
+                    allEntities.Add(new Blueprint.entity(splitterType, new Blueprint.entityComponent[] { S.position.AsBlueprintPosition, new Blueprint.direction(S.rotation), new Blueprint.input_priority(S.input_priority ? "left" : "right") }));
 
                 }
             }
@@ -218,12 +237,7 @@ namespace TheBluePrinter
                     placeRoboPorts = false;
                 }
 
-
-
-
-
                 Inserter lastInserter = null;       // stores the last placed inserter so the next inserter can connect to it with wires
-
 
                 //Main loops for rows of requestor chests
                 for (int x = 0; x < idMap.GetLength(1); x++)

@@ -290,6 +290,13 @@ namespace TheBluePrinter
             return -1;
         }
 
+        public static Item FindByID(int id)
+        {
+            if (id < AllItems.Count)
+            return AllItems[id];
+            else return null;
+        }
+
         /// <summary>
         /// Finds an Item based on its item name
         /// </summary>

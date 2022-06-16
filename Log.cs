@@ -69,6 +69,7 @@ namespace TheBluePrinter
     {
         public static Color red = Log.HextoColor("ff0000");
         public static Color white = Log.HextoColor("ffffff");
+        public static Color yellow = Log.HextoColor("ffc600");
     }
     /// <summary>
     /// Holds a individual message and all of its properties

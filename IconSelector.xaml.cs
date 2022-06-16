@@ -19,6 +19,9 @@ namespace TheBluePrinter
     /// </summary>
     public partial class IconSelector : Window
     {
+
+        public Item Selected;
+
         public IconSelector()
         {
             InitializeComponent();

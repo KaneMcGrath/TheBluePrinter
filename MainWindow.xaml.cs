@@ -1,21 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
-using System.IO;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace TheBluePrinter
 {
@@ -24,9 +15,13 @@ namespace TheBluePrinter
     /// </summary>
     public partial class MainWindow : Window
     {
+        
+
         public MainWindow()
         {
             InitializeComponent();
+            FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
+            ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\images\\textures\\blocks\\bookshelf.png";
         }
 
         private void OnClickImageSourcePath(object sender, RoutedEventArgs e)
@@ -43,8 +38,11 @@ namespace TheBluePrinter
                 IconImageSourcePathTextBox.Text = openFileDialog.FileName;
         }
 
+
+        
         private void TestButtonAddUC(object sender, RoutedEventArgs e)
-        {            ItemSelectionWidget isw = new ItemSelectionWidget();
+        {            
+            ItemSelectionWidget isw = new ItemSelectionWidget();
             isw.Height = 60.0;
             isw.Margin = new Thickness(0.0, 0.0, 0.0, 4.0);
             isw.Randomize();
@@ -55,7 +53,6 @@ namespace TheBluePrinter
         private void MainWindowInit(object sender, EventArgs e)
         {
             WM.MainWindow = this;
-            
         }
         
         private void OnClickOpenConsoleButton(object sender, RoutedEventArgs e)
@@ -275,7 +272,70 @@ namespace TheBluePrinter
         private void GeneratePrinterOnClick(object sender, RoutedEventArgs e)
         {
             Bitmap image = new Bitmap(GeneratePrinter.ImageSourcePath);
-            ResultTextBox.Text = BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)));
+            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image))));
         }
+
+        private void GeneratePreviewOnClick(object sender, RoutedEventArgs e)
+        {
+            int mipmapLevel = 0;
+            if (IconResolutionSlider.Value == 64) mipmapLevel = 0;
+            if (IconResolutionSlider.Value == 32) mipmapLevel = 1;
+            if (IconResolutionSlider.Value == 16) mipmapLevel = 2;
+            if (IconResolutionSlider.Value == 8) mipmapLevel = 3;
+            Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(new Bitmap(GeneratePrinter.ImageSourcePath), false, mipmapLevel);
+            MemoryStream ms = new MemoryStream();
+            bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = ms;
+            image.EndInit();
+            PreviewGeneratedImage.Source = image;
+        }
+
+        private void Pick_Primary_Color_Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Settings.PrimaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                WM.UpdateColors();
+            }
+        }
+
+        private void Pick_Secondary_Color_Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Settings.SecondaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                WM.UpdateColors();
+            }
+        }
+
+        
+
+        
+
+        private void SavePreviewImageButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                if (ImageAnalyzer.LastPreviewImage != null)
+                {
+                    try
+                    {
+                        ImageAnalyzer.LastPreviewImage.Save(saveFileDialog.FileName);
+                    }
+                    catch(Exception exc)
+                    {
+                        Log.New(exc.Message, CC.red);
+                    }
+                }
+            }
+        }
+
+        
     }
 }

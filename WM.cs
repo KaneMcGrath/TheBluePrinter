@@ -66,16 +66,16 @@ namespace TheBluePrinter
             MainWindow.MainWindow2FGP.Foreground = Primary;
             MainWindow.MainWindow3BGP.Background = Primary;
             MainWindow.MainWindow4FGP.Foreground = Primary;
-            MainWindow.MainWindow5FGP.Foreground = Primary;
+            MainWindow.SourceImageReminderLabel.Foreground = Primary;
             MainWindow.MainWindow6FGP.Foreground = Primary;
-            MainWindow.MainWindow7FGP.Foreground = Primary;
+            MainWindow.PreviewImageReminderLabel.Foreground = Primary;
             MainWindow.MainWindow8FGP.Foreground = Primary;
             MainWindow.MainWindow9FGP.Foreground = Primary;
             MainWindow.MainWindow10FGS.Foreground = Secondary;
             MainWindow.MainWindow11FGS.Foreground = Secondary;
             MainWindow.MainWindow12FGP.Foreground = Primary;
             MainWindow.MainWindow13FGP.Foreground = Primary;
-            MainWindow.MainWindow14BGP.Background = Primary;
+            MainWindow.ImageSourceTabControl.Background = Primary;
             MainWindow.MainWindow15FGS.Foreground = Secondary;
             MainWindow.MainWindow16FGP.Foreground = Primary;
             MainWindow.MainWindow17FGS.Foreground = Secondary;
@@ -83,7 +83,7 @@ namespace TheBluePrinter
             MainWindow.MainWindow19FGS.Foreground = Secondary;
             MainWindow.MainWindow20FGP.Foreground = Primary;
             MainWindow.MainWindow21FGP.Foreground = Primary;
-            MainWindow.MainWindow22FGP.Foreground = Primary;
+            //MainWindow.MainWindow22FGP.Foreground = Primary;
             MainWindow.MainWindow23FGP.Foreground = Primary;
             MainWindow.MainWindow24FGP.Foreground = Primary;
             MainWindow.MainWindow25FGP.Foreground = Primary;
@@ -130,7 +130,6 @@ namespace TheBluePrinter
             }
             Log.New("Updated " + ItemSelectionWidget.AllWidgets.Count + " widgets");
             Log.New("New Color Scheme Applied");
-            
         }
 
         /// <summary>

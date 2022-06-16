@@ -11,11 +11,15 @@ namespace TheBluePrinter
 {
     /// <summary>
     /// Covers most functions of the "Generate Printer" tab
+    /// counterintuitively has no part in generating the printer which is
+    /// in the Image analyzer and blueprint builder
     /// </summary>
     class GeneratePrinter
     {
         
         public static string ImageSourcePath = "";
+        public static string IconSourcePath = "";
+        public static bool TF_ImageSource_IconSource = true;
         private static BitmapImage ImagePreview;
         private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
 
@@ -30,7 +34,9 @@ namespace TheBluePrinter
             {
                 Settings.FactorioPath = WM.MainWindow.FactorioPathTextBox.Text;
                 Log.New("Factorio game folder found " + path);
+                Log.New("Loading Icons", CC.yellow);
                 ResourceLoader.LoadFactorioIcons();
+
                 ItemSelector.ReloadIcons();
             }
 
@@ -66,13 +72,40 @@ namespace TheBluePrinter
             }
         }
 
+        /// <summary>
+        /// Called every time text is entered into the icon source path
+        /// </summary>
+        public static void UpdateIconSourcePath()
+        {
+            if (WM.MainWindow.IconImageSourcePathTextBox.Text != IconSourcePath)
+            {
+                IconSourcePath = WM.MainWindow.IconImageSourcePathTextBox.Text;
+
+                if (File.Exists(IconSourcePath))
+                {
+                    string extention = IconSourcePath.Split('.')[1].Trim().ToUpper();
+                    bool flag = false;
+                    foreach (string ext in SupportedImageTypes)
+                    {
+                        if (ext == extention) flag = true;
+                    }
+                    if (flag)
+                    {
+                        Log.New("Loading Image...");
+                        LoadImagePreview();
+
+                    }
+                }
+            }
+        }
+
 
         
         /// <summary>
-        /// After the ImageSourcePath is determined to be a valid Image
+        /// After the ImageSourcePath or IconSourcePath is determined to be a valid Image
         /// try loading the image and showing the preview
         /// there appears to be memory issues with the bitmap cache 
-        /// but unless you load like 100 images consecutivly it shouldent be too much of an issue
+        /// but unless you load like 1000 images consecutivly it shouldent be too much of an issue
         /// </summary>
         public static void LoadImagePreview()
         {

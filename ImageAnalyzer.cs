@@ -8,8 +8,6 @@ using System.IO;
 
 namespace TheBluePrinter
 {
-
-
     /// <summary>
     /// Handles almoast all image analysis and manipulation
     /// </summary>
@@ -17,7 +15,7 @@ namespace TheBluePrinter
     {
         public static List<string> lastUsedItems = new List<string>();
 
-
+        public static Bitmap LastPreviewImage;
         /// <summary>
         /// Determins what Items should be placed where and saves their index in the allItems list into a 2d array
         /// This is like a chain of hacks that eventually works, should clean this up later but I probably wont.
@@ -26,7 +24,7 @@ namespace TheBluePrinter
         /// <returns></returns>
         public static int[,] CreateItemImage(Bitmap input)
         {
-
+            Log.New("Creating Item Map", CC.yellow);
             lastUsedItems.Clear();
             int[,] result = new int[input.Height, input.Width];
             for (int y = 0; y < input.Height; y++)
@@ -90,14 +88,8 @@ namespace TheBluePrinter
             int finalBlue = blue / total;
             int finalGreen = green / total;
 
-
-
             return Color.FromArgb(finalRed, finalGreen, finalBlue);
-
         }
-
-
-
 
         public static float lastMin = 0f;
         public static Color NearestColor(Color c)
@@ -167,7 +159,6 @@ namespace TheBluePrinter
         /// <returns></returns>
         public static Bitmap FormatFactorioIconImage(Bitmap icon, int mipmapLevel)
         {
-
             if (mipmapLevel == 0)
             {
                 Bitmap result = new Bitmap(64, 64);
@@ -177,7 +168,84 @@ namespace TheBluePrinter
                 }
                 return result;
             }
+            if (mipmapLevel == 1)
+            {
+                Bitmap result = new Bitmap(32, 32);
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(icon, -64, 0);
+                }
+                return result;
+            }
+            if (mipmapLevel == 2)
+            {
+                Bitmap result = new Bitmap(16, 16);
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(icon, new Point(-96, 0));
+                }
+                return result;
+            }
+            if (mipmapLevel == 3)
+            {
+                Bitmap result = new Bitmap(8, 8);
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(icon, new Point(-112, 0));
+                }
+                return result;
+            }
             return null;
+        }
+
+        public static Bitmap CreatePreviewImage(Bitmap input, bool debugPixels = false, int mipmapLevel = 0)
+        {
+
+            int iconRes = 64;
+            
+            if (mipmapLevel == 0)           iconRes = 64;
+            else if (mipmapLevel == 1)      iconRes = 32;
+            else if (mipmapLevel == 2)      iconRes = 16;
+            else if (mipmapLevel == 3)      iconRes = 8;
+            int iconHalf = (iconRes / 2);
+            
+            int[,] itemMap = CreateItemImage(input);
+            Log.New("Building Preview", CC.yellow);
+            Bitmap result = new Bitmap((input.Width * iconRes) + iconHalf, input.Height * iconRes);
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                for (int y = 0; y < itemMap.GetLength(0); y++)
+                {
+                    for (int x = 0; x < itemMap.GetLength(1); x++)
+                    {
+                        Color pixel = input.GetPixel(x, y);
+                        Color nearest = NearestColor(pixel);
+                        Item mappedItem = Item.FindByID(itemMap[y, x]);
+                        Bitmap icon = FormatFactorioIconImage(mappedItem.Icon, mipmapLevel);
+
+                        if (!lastUsedItems.Contains(mappedItem.Name))
+                        {
+                            lastUsedItems.Add(mappedItem.Name);
+                        }
+                        g.DrawImage(icon, new Point(x * iconRes, y * iconRes));
+                        g.DrawImage(icon, new Point(x * iconRes + iconHalf, y * iconRes));
+                        if (debugPixels)
+                        {
+                            for (int i = 0; i < 20; i++)
+                            {
+                                for (int k = 0; k < 10; k++)
+                                {
+                                    result.SetPixel(x * iconRes + k, y * iconRes + i, pixel);
+                                    result.SetPixel(x * iconRes + 10 + k, y * iconRes + i, nearest);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            LastPreviewImage = result;
+            Log.New("Created preview image");
+            return result;
         }
     }
 }
