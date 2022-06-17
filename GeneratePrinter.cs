@@ -18,8 +18,6 @@ namespace TheBluePrinter
     {
         
         public static string ImageSourcePath = "";
-        public static string IconSourcePath = "";
-        public static bool TF_ImageSource_IconSource = true;
         private static BitmapImage ImagePreview;
         private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
 
@@ -75,29 +73,6 @@ namespace TheBluePrinter
         /// <summary>
         /// Called every time text is entered into the icon source path
         /// </summary>
-        public static void UpdateIconSourcePath()
-        {
-            if (WM.MainWindow.IconImageSourcePathTextBox.Text != IconSourcePath)
-            {
-                IconSourcePath = WM.MainWindow.IconImageSourcePathTextBox.Text;
-
-                if (File.Exists(IconSourcePath))
-                {
-                    string extention = IconSourcePath.Split('.')[1].Trim().ToUpper();
-                    bool flag = false;
-                    foreach (string ext in SupportedImageTypes)
-                    {
-                        if (ext == extention) flag = true;
-                    }
-                    if (flag)
-                    {
-                        Log.New("Loading Image...");
-                        LoadImagePreview();
-
-                    }
-                }
-            }
-        }
 
 
         

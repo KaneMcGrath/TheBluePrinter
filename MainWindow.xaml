@@ -82,36 +82,16 @@
                     </Grid>
                     <ScrollViewer x:Name="MainWindow13FGP" Grid.Column="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="8,4,8,4" Background="Transparent">
-                            <TabControl x:Name="ImageSourceTabControl" Height="160" Background="#FF3D659B">
-                                <TabItem Header="Image" IsSelected="True">
-                                    <StackPanel>
-                                        <Label x:Name="MainWindow15FGS" Height="30" Content="Image Source Path" Foreground="#FFD9D3BF" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
-                                        <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
-                                        <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True"/>
-                                    </StackPanel>
-                                </TabItem>
-                                <TabItem Header="icon" IsSelected="False">
-                                    <StackPanel>
-                                        <Label x:Name="MainWindow17FGS" Height="30" Content="Icon Source Path" Foreground="#FFD9D3BF" ToolTip="The path to the factorio icon file you want converted.  This will automatically format the image to use only the resolution selected below"/>
-                                               <TextBox x:Name="IconImageSourcePathTextBox" Height="30"  Text=""/>
-                                        <Button x:Name="MainWindow18FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickIconSourcePath"/>
-                                        <Grid >
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Label x:Name="MainWindow19FGS" Grid.Column="0" Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF" ToolTip="Which resolution from the icons mipmaps you want to use"/>
-                                            <Slider x:Name="IconSourceResolutionSlider" Grid.Column="1" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
-
-                                        </Grid>
-
-                                    </StackPanel>
-                                </TabItem>
-
-                            </TabControl>
+                            
+                            <Label x:Name="MainWindow15FGP" Height="30" Content="Image Source Path" Foreground="#FF3D659B" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
+                            <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
+                            <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True" Margin="0,0,0,15"/>
+                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Checked="FormatFactorioIconCheckboxOnChecked" Click="FormatFactorioIconCheckboxOnClick"/>
+                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed"  Grid.Column="1" Margin="8,0,8,15" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" />
+                            
                             <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images."/>
                             <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
-                            <Button x:Name="MainWindow21FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath"/>
+                            <Button x:Name="MainWindow21FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Margin="0,0,0,15"/>
                             
                             <Label x:Name="MainWindow29FGP" Height="30" Content="Belt Type" Foreground="#FF3D659B" ToolTip="The tier of belt to be generated in the blueprint.  Affects the belts, splitters, and underground belts."/>
                             <ComboBox x:Name="BeltTypeComboBox" ToolTip="The tier of belt to be generated in the blueprint.  Affects the belts, splitters, and underground belts.">

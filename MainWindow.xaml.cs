@@ -30,13 +30,6 @@ namespace TheBluePrinter
             if (openFileDialog.ShowDialog() == true)
                 ImageSourcePathTextBox.Text = openFileDialog.FileName;
         }
-        
-        private void OnClickIconSourcePath(object sender, RoutedEventArgs e)
-        {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                IconImageSourcePathTextBox.Text = openFileDialog.FileName;
-        }
 
 
         
@@ -336,6 +329,21 @@ namespace TheBluePrinter
             }
         }
 
-        
+        private void FormatFactorioIconCheckboxOnChecked(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void FormatFactorioIconCheckboxOnClick(object sender, RoutedEventArgs e)
+        {
+            if (FormatFactorioIconCheckbox.IsChecked == true)
+            {
+                IconSourceResolutionSlider.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                IconSourceResolutionSlider.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }
