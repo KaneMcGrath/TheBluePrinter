@@ -20,6 +20,7 @@ namespace TheBluePrinter
     /// </summary>
     public partial class ItemSelectionWidget : UserControl
     {
+        private static readonly Color DefaultColor = Color.FromRgb(255,255,0);
 
         public static List<ItemSelectionWidget> AllWidgets = new List<ItemSelectionWidget>();
         /// <summary>
@@ -27,9 +28,9 @@ namespace TheBluePrinter
         /// used for display and for finding the Item
         /// </summary>
         public string itemName = "Default Name";
-        
+
         //Initialized for the color perview to display on the right
-        public Color averageColor = Color.FromRgb(255,255,0);
+        public Color averageColor = DefaultColor;
 
         public Item myItem;
 
@@ -54,8 +55,8 @@ namespace TheBluePrinter
             AllWidgets.Add(this);
             NameplateBackgroundRectangle.Fill = new SolidColorBrush(Settings.PrimaryColor);
             ItemNameLabel.Foreground = new SolidColorBrush(Settings.SecondaryColor);
-            this.Height = 60.0;
-            this.Margin = new Thickness(0.0, 0.0, 0.0, 4.0);
+            //this.Height = 60.0;
+            //this.Margin = new Thickness(0.0, 0.0, 0.0, 4.0);
         }
 
 
@@ -99,7 +100,7 @@ namespace TheBluePrinter
                 IconImage.Source = Tools.BitmapConverter(ImageAnalyzer.FormatFactorioIconImage(item.Icon, 0));
 
             }
-            Log.New("Init Item " + item.Name + " [" + item.AverageColor.ToString() + "]   {hidden = " + isHidden + "}");
+            //Log.New("Init Item " + item.Name + " [" + item.AverageColor.ToString() + "]   {hidden = " + isHidden + "}");
         }
 
         public void ShowErrorRectangle(string reason = "This item has a stack size of 1 and should not be used in the printer")

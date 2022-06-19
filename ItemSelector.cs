@@ -104,6 +104,7 @@ namespace TheBluePrinter
                         WM.MainWindow.AllItemsStackPanel.Children.Add(isw);
                     }
                 }
+                
             }
             else
             {
@@ -261,9 +262,10 @@ namespace TheBluePrinter
                 {
                     AddAllowedItem(isw);
                 }
-                BuildLists();
-                UpdateTotalCount();
+                
             }
+            BuildLists();
+            UpdateTotalCount();
         }
 
         public static void BuildLists()

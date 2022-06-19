@@ -17,7 +17,23 @@ namespace TheBluePrinter
         /// Main List that stores all LogMessages
         /// </summary>
         public static List<LogMessage> MessageList = new List<LogMessage>();
-        
+
+
+        /// <summary>
+        /// Holds all timers to make them easier to use
+        /// </summary>
+        public static Dictionary<int, long> Timers = new Dictionary<int, long>();
+
+        public static void StartTimer(int key)
+        {
+            Timers[key] = DateTime.Now.Ticks;
+        }
+
+        public static string GetTimer(int key)
+        {
+            return ((DateTime.Now.Ticks - Timers[key]) / TimeSpan.TicksPerMillisecond).ToString() + "ms";
+        }
+
         /// <summary>
         /// Converts Hexidecimal color codes to a Color
         /// </summary>

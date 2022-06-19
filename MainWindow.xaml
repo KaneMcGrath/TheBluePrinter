@@ -63,7 +63,7 @@
                                 <Button x:Name="MainWindow8FGP" Height="30" Content="Generate Printer" Foreground="#FF3D659B" Click="GeneratePrinterOnClick"/>
                                 <Rectangle Height="15"/>
                                 <Button x:Name="MainWindow9FGP" Height="30" Content="Generate Preview" Foreground="#FF3D659B" Click="GeneratePreviewOnClick"/>
-                                <Label x:Name="MainWindow10FGS" Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF"/>
+                                <Label x:Name="MainWindow10FGS" Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF" ToolTip="The resolution of the icons used in the preview image.  For large images, use smaller icon resolutions"/>
                                 <Slider x:Name="IconResolutionSlider" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
                                 <Label Content="Warning! High Values can generate huge images" Foreground="Red" FontSize="10" Height="25" ToolTip="The Icon resolution will be multiplied by your image size.  If your image is larger than 64x64 I would recommend a lower icon size for the preview image."/>
                             </StackPanel>
@@ -86,8 +86,8 @@
                             <Label x:Name="MainWindow15FGP" Height="30" Content="Image Source Path" Foreground="#FF3D659B" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
                             <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
                             <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True" Margin="0,0,0,15"/>
-                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Checked="FormatFactorioIconCheckboxOnChecked" Click="FormatFactorioIconCheckboxOnClick"/>
-                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed"  Grid.Column="1" Margin="8,0,8,15" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" />
+                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick"/>
+                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed"  Grid.Column="1" Margin="8,0,8,15" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
                             
                             <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images."/>
                             <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
@@ -125,7 +125,7 @@
                         
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -287,7 +287,9 @@
                         <Button x:Name="TestItemParsing" Height="50" Content="ParseItems" Click="ParseItemsOnClick" />
                         <Button x:Name="PrintAllFlags" Height="50" Content="LogAllFlags" Click="LogAllFlagsOnClick" />
                         <Button x:Name="LoadAllItems" Height="50" Content="LoadItems" Click="OnClickLoadAllItems" />
+                        <Button x:Name="LoadAllIcons" Height="50" Content="LoadIcons" Click="OnClickLoadAllIcons" />
                         <Button x:Name="AverageColorButton" Height="50" Content="AverageColorButton" Click="AverageColorButtonOnClick" />
+                        <Button x:Name="GenerateItemCode" Height="50" Content="GenerateItemCode" Click="GenerateItemCodeOnClick"  />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="2">
                         <Grid Height="50">

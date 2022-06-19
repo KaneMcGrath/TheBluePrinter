@@ -16,12 +16,10 @@ namespace TheBluePrinter
     /// </summary>
     class GeneratePrinter
     {
-        
         public static string ImageSourcePath = "";
         private static BitmapImage ImagePreview;
         private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
 
-        
         /// <summary>
         /// Updates the factorio path and loads all of the Icons
         /// </summary>
@@ -39,8 +37,6 @@ namespace TheBluePrinter
             }
 
         }
-
-        
 
         /// <summary>
         /// Called every time text is entered into the Image source path text box
@@ -69,32 +65,55 @@ namespace TheBluePrinter
                 }
             }
         }
-
-        /// <summary>
-        /// Called every time text is entered into the icon source path
-        /// </summary>
-
-
         
         /// <summary>
-        /// After the ImageSourcePath or IconSourcePath is determined to be a valid Image
+        /// After the ImageSourcePath is determined to be a valid Image or the mipmap value is changed
         /// try loading the image and showing the preview
-        /// there appears to be memory issues with the bitmap cache 
-        /// but unless you load like 1000 images consecutivly it shouldent be too much of an issue
+        /// This is not the one made of items, just the image you want to convert
         /// </summary>
         public static void LoadImagePreview()
         {
             try
             {
+                
+
+                Bitmap sourceImage;
+                if (WM.MainWindow.FormatFactorioIconCheckbox.IsChecked == true)
+                {
+                    int mipmapLevel = 0;
+                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
+                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
+                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
+                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
+                    sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+                }
+                else
+                {
+                    sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
+                }
+
+                
+                MemoryStream ms = new MemoryStream();
+                sourceImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
                 image.BeginInit();
-                image.UriSource = new Uri(ImageSourcePath);
-                image.CacheOption = BitmapCacheOption.OnLoad;
+                ms.Seek(0, SeekOrigin.Begin);
+                image.StreamSource = ms;
                 image.EndInit();
+
+                
+                //BitmapImage image = new BitmapImage();
+                //image.BeginInit();
+                //image.UriSource = new Uri(ImageSourcePath);
+                //image.CacheOption = BitmapCacheOption.OnLoad;
+                //image.EndInit();
+                
+
                 ImagePreview = image.Clone();
                 ImagePreview.Freeze();
                 WM.MainWindow.UserImagePreview.Source = ImagePreview;
                 Log.New("Loaded Image " + ImageSourcePath);
+                WM.MainWindow.SourceImageReminderLabel.Visibility = System.Windows.Visibility.Hidden;
             }
             catch (Exception e)
             {

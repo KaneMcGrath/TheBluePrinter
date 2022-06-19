@@ -20,8 +20,11 @@ namespace TheBluePrinter
         public MainWindow()
         {
             InitializeComponent();
+            ResourceLoader.LoadDefaultItems();
+            ItemSelector.LoadItems();
             FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
             ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\images\\textures\\blocks\\bookshelf.png";
+
         }
 
         private void OnClickImageSourcePath(object sender, RoutedEventArgs e)
@@ -174,10 +177,24 @@ namespace TheBluePrinter
         
         private void OnClickLoadAllItems(object sender, RoutedEventArgs e)
         {
+            Log.StartTimer(0);
             ResourceLoader.LoadItems();
-            ResourceLoader.LoadFactorioIcons();
+            
+            Log.New("ResourceLoader finished in " + Log.GetTimer(0));
+            Log.StartTimer(1);
             ItemSelector.LoadItems();
+            Log.New("Item Selection Widgets Generated in " + Log.GetTimer(1));
+        }
+
+        private void OnClickLoadAllIcons(object sender, RoutedEventArgs e)
+        {
+            Log.StartTimer(2);
+            ResourceLoader.LoadFactorioIcons();
+            Log.New("Icons Loaded in " + Log.GetTimer(2));
+
+            Log.StartTimer(3);
             ItemSelector.ReloadIcons();
+            Log.New("Item Selection Widgets Reloaded in " + Log.GetTimer(3));
         }
 
         private void AverageColorButtonOnClick(object sender, RoutedEventArgs e)
@@ -264,18 +281,50 @@ namespace TheBluePrinter
 
         private void GeneratePrinterOnClick(object sender, RoutedEventArgs e)
         {
-            Bitmap image = new Bitmap(GeneratePrinter.ImageSourcePath);
-            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image))));
+ 
+
+            int mipmapLevel = 0;
+            if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
+            if (IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
+            if (IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
+            if (IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
+
+            Bitmap image;
+            if (FormatFactorioIconCheckbox.IsChecked == true)
+            {
+                image = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+            }
+            else
+            {
+                image = new Bitmap(GeneratePrinter.ImageSourcePath);
+            }
+            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), 2));
         }
 
         private void GeneratePreviewOnClick(object sender, RoutedEventArgs e)
         {
             int mipmapLevel = 0;
-            if (IconResolutionSlider.Value == 64) mipmapLevel = 0;
-            if (IconResolutionSlider.Value == 32) mipmapLevel = 1;
-            if (IconResolutionSlider.Value == 16) mipmapLevel = 2;
-            if (IconResolutionSlider.Value == 8) mipmapLevel = 3;
-            Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(new Bitmap(GeneratePrinter.ImageSourcePath), false, mipmapLevel);
+            if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
+            if (IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
+            if (IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
+            if (IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
+            int previewMipmapLevel = 0;
+            if (IconResolutionSlider.Value == 64) previewMipmapLevel = 0;
+            if (IconResolutionSlider.Value == 32) previewMipmapLevel = 1;
+            if (IconResolutionSlider.Value == 16) previewMipmapLevel = 2;
+            if (IconResolutionSlider.Value == 8) previewMipmapLevel = 3;
+
+            Bitmap sourceImage;
+            if (FormatFactorioIconCheckbox.IsChecked == true)
+            {
+                sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+            }
+            else
+            {
+                sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
+            }
+
+            Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
             MemoryStream ms = new MemoryStream();
             bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
             BitmapImage image = new BitmapImage();
@@ -306,13 +355,17 @@ namespace TheBluePrinter
             }
         }
 
-        
-
-        
-
+        // "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF"
+        //PNG
+        //JPG
+        //BMP
+        //Gif
+        //Tiff
+        //Exif
         private void SavePreviewImageButtonOnClick(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG Image (*.png)|*.png|JPG Image (*.jpg)|*.jpg|BMP Image (*.bmp)|*.bmp|GIF Image (*.gif)|*.gif|TIFF Image (*.tiff)|*.tiff|EXIF Image (*.exif)|*.exif";
             if (saveFileDialog.ShowDialog() == true)
             {
                 if (ImageAnalyzer.LastPreviewImage != null)
@@ -329,10 +382,6 @@ namespace TheBluePrinter
             }
         }
 
-        private void FormatFactorioIconCheckboxOnChecked(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void FormatFactorioIconCheckboxOnClick(object sender, RoutedEventArgs e)
         {
@@ -343,6 +392,23 @@ namespace TheBluePrinter
             else
             {
                 IconSourceResolutionSlider.Visibility = Visibility.Collapsed;
+            }
+            if (File.Exists(GeneratePrinter.ImageSourcePath))
+            {
+                GeneratePrinter.LoadImagePreview();
+            }
+        }
+
+        private void GenerateItemCodeOnClick(object sender, RoutedEventArgs e)
+        {
+            Tools.ReallyStupidDefaultItemsCodeGenerator();
+        }
+
+        private void IconSourceResolutionSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (File.Exists(GeneratePrinter.ImageSourcePath))
+            {
+                GeneratePrinter.LoadImagePreview();
             }
         }
     }
