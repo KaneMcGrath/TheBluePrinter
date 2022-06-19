@@ -313,26 +313,33 @@ namespace TheBluePrinter
             if (IconResolutionSlider.Value == 32) previewMipmapLevel = 1;
             if (IconResolutionSlider.Value == 16) previewMipmapLevel = 2;
             if (IconResolutionSlider.Value == 8) previewMipmapLevel = 3;
-
-            Bitmap sourceImage;
-            if (FormatFactorioIconCheckbox.IsChecked == true)
+            try
             {
-                sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
-            }
-            else
-            {
-                sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
-            }
+                Bitmap sourceImage;
+                if (FormatFactorioIconCheckbox.IsChecked == true)
+                {
+                    sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+                }
+                else
+                {
+                    sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
+                }
 
-            Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
-            MemoryStream ms = new MemoryStream();
-            bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            ms.Seek(0, SeekOrigin.Begin);
-            image.StreamSource = ms;
-            image.EndInit();
-            PreviewGeneratedImage.Source = image;
+                Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
+                MemoryStream ms = new MemoryStream();
+                bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                ms.Seek(0, SeekOrigin.Begin);
+                image.StreamSource = ms;
+                image.EndInit();
+                PreviewGeneratedImage.Source = image;
+                PreviewImageReminderLabel.Visibility = Visibility.Hidden;
+            }
+            catch(Exception ex)
+            {
+                Log.New(ex.Message, CC.red);
+            }
         }
 
         private void Pick_Primary_Color_Button_OnClick(object sender, RoutedEventArgs e)

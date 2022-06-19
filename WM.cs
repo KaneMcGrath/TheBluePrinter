@@ -119,6 +119,9 @@ namespace TheBluePrinter
             MainWindow.AllowedItemsSelectedCountRectangle.Foreground = Primary;
             MainWindow.AllItemsTotalCountRectangle.Foreground = Primary;
             MainWindow.AllowedItemsTotalCountRectangle.Foreground = Primary;
+            //MainWindow.MainWindow40FGP.Fill = Primary;
+            //MainWindow.MainWindow41FGP.Fill = Primary;
+
             
             Log.New("Updated Primary Color to :" + Primary.ToString(), Settings.PrimaryColor);
             Log.New("Updated Secondary Color to :" + Secondary.ToString(), Settings.SecondaryColor);
