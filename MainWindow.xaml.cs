@@ -24,7 +24,9 @@ namespace TheBluePrinter
             ItemSelector.LoadItems();
             FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
             ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\images\\textures\\blocks\\bookshelf.png";
-
+            Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
+            Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
+            WM.UpdateColors();
         }
 
         private void OnClickImageSourcePath(object sender, RoutedEventArgs e)
@@ -61,12 +63,12 @@ namespace TheBluePrinter
             WM.CloseMainWindow();
         }
 
-        private void ApplyColorsOnClick(object sender, RoutedEventArgs e)
-        {
-            Settings.PrimaryColor = TestingHelper.HextoColor(PrimaryColorBox.Text);
-            Settings.SecondaryColor = TestingHelper.HextoColor(SecondaryColorBox.Text);
-            WM.UpdateColors();
-        }
+        //private void ApplyColorsOnClick(object sender, RoutedEventArgs e)
+        //{
+        //    Settings.PrimaryColor = TestingHelper.HextoColor(PrimaryColorBox.Text);
+        //    Settings.SecondaryColor = TestingHelper.HextoColor(SecondaryColorBox.Text);
+        //    WM.UpdateColors();
+        //}
 
         private void ApplyScheme1Click(object sender, RoutedEventArgs e)
         {
@@ -326,6 +328,7 @@ namespace TheBluePrinter
                 }
 
                 Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
+                if (bitImage == null) return;
                 MemoryStream ms = new MemoryStream();
                 bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
@@ -363,12 +366,6 @@ namespace TheBluePrinter
         }
 
         // "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF"
-        //PNG
-        //JPG
-        //BMP
-        //Gif
-        //Tiff
-        //Exif
         private void SavePreviewImageButtonOnClick(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -385,6 +382,10 @@ namespace TheBluePrinter
                     {
                         Log.New(exc.Message, CC.red);
                     }
+                }
+                else
+                {
+                    Log.New("There is no preview image", CC.red);
                 }
             }
         }
@@ -417,6 +418,44 @@ namespace TheBluePrinter
             {
                 GeneratePrinter.LoadImagePreview();
             }
+        }
+
+        private void SettingsMenuButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            if (WM.SettingsMenuOpen)
+            {
+                SettingsColumnWidth.Width = new GridLength(0);
+                SettingsMenuStackPanel.Visibility = Visibility.Hidden;
+                WM.SettingsMenuOpen = false;
+            }
+            else
+            {
+                SettingsColumnWidth.Width = new GridLength(230);
+                SettingsMenuStackPanel.Visibility = Visibility.Visible;
+                WM.SettingsMenuOpen = true;
+            }
+        }
+
+        private void SettingsParseItemsButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            ResourceLoader.itemsLoaded = false;
+            ResourceLoader.iconsLoaded = false;
+            Item.ClearItemsData();
+            ItemSelector.ClearLists();
+            ResourceLoader.ParseItemsLua();
+            ResourceLoader.LoadFactorioIcons();
+            ItemSelector.LoadItems();
+        }
+
+        private void ClearItemListsOnClick(object sender, RoutedEventArgs e)
+        {
+            Item.ClearItemsData();
+            ItemSelector.ClearLists();
+        }
+
+        private void SetttingsGenerateInfinityButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildAllInfinityChests()));
         }
     }
 }

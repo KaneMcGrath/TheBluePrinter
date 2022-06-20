@@ -273,5 +273,14 @@ namespace TheBluePrinter
             BuildAllowedList("", WM.MainWindow.ISShowHidden.IsChecked.Value, WM.MainWindow.ISShowUnstackable.IsChecked.Value);
             BuildAllList("", WM.MainWindow.ISShowHidden.IsChecked.Value, WM.MainWindow.ISShowUnstackable.IsChecked.Value);
         }
+
+        public static void ClearLists()
+        {
+            WM.MainWindow.AllItemsStackPanel.Children.Clear();
+            WM.MainWindow.AllowedItemsStackPanel.Children.Clear();
+            AllItems.Clear();
+            AllowedItems.Clear();
+            
+        }
     }
 }

@@ -21,6 +21,8 @@ namespace TheBluePrinter
 
         public static bool Closing = false;
 
+        public static bool SettingsMenuOpen = false;
+
         /// <summary>
         /// Will display the last log message at the bottem and ensure it is the correct color
         /// </summary>

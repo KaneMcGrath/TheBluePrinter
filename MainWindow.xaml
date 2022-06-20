@@ -1,4 +1,5 @@
-﻿<Window x:Name="MainWindowBGP" x:Class="TheBluePrinter.MainWindow"
+﻿
+    <Window x:Name="MainWindowBGP" x:Class="TheBluePrinter.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,16 +7,19 @@
         xmlns:local="clr-namespace:TheBluePrinter"
         mc:Ignorable="d"
         Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="250" MinHeight="220" Initialized="MainWindowInit" Closing="OnClosing" KeyDown="Key_Down" KeyUp="Key_Up">
+    
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition x:Name="SettingsColumnWidth" Width="230"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
-        
-        <TabControl x:Name="MainWindow1BGS" Background="#FFD9D3BF" BorderBrush="#00A65757" Foreground="White" Grid.ColumnSpan="2">
+        <TabControl x:Name="MainWindow1BGS" Background="#FFD9D3BF" BorderBrush="#00A65757" Foreground="White" Grid.ColumnSpan="1">
             <TabItem x:Name="MainWindow2FGP" Header="Generate Printer" Background="#FFE5E5E5" Foreground="#FF3D659B" FontWeight="Bold" Height="35" FontSize="16">
                 <Grid>
-
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="87*"/>
                         <ColumnDefinition Width="181*"/>
@@ -85,14 +89,14 @@
                             
                             <Label x:Name="MainWindow15FGP" Height="30" Content="Image Source Path" Foreground="#FF3D659B" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
                             <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
-                            <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True" Margin="0,0,0,15"/>
-                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick"/>
+                            <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True" Margin="0,0,0,30"/>
+                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick" ToolTip="If you choose a image from the factorio (data\base\graphics\icons) folder, this will format the image to a selected mipmap level" HorizontalAlignment="Stretch"/>
                             <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed"  Grid.Column="1" Margin="8,0,8,15" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
                             
-                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images."/>
+                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images." Margin="0,30,0,0"/>
                             <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
                             <Button x:Name="MainWindow21FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Margin="0,0,0,15"/>
-                            
+
                             
                         </StackPanel>
                     </ScrollViewer>
@@ -276,15 +280,13 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="1">
-                        <TextBox Height="50" x:Name="PrimaryColorBox"/>
-                        <TextBox Height="50" x:Name="SecondaryColorBox"/>
-                        <Button x:Name="ApplyColors" Height="50" Content="Apply" Click="ApplyColorsOnClick"/>
                         <Button x:Name="TestItemParsing" Height="50" Content="ParseItems" Click="ParseItemsOnClick" />
                         <Button x:Name="PrintAllFlags" Height="50" Content="LogAllFlags" Click="LogAllFlagsOnClick" />
                         <Button x:Name="LoadAllItems" Height="50" Content="LoadItems" Click="OnClickLoadAllItems" />
                         <Button x:Name="LoadAllIcons" Height="50" Content="LoadIcons" Click="OnClickLoadAllIcons" />
                         <Button x:Name="AverageColorButton" Height="50" Content="AverageColorButton" Click="AverageColorButtonOnClick" />
                         <Button x:Name="GenerateItemCode" Height="50" Content="GenerateItemCode" Click="GenerateItemCodeOnClick"  />
+                        <Button x:Name="ClearItemLists" Height="50" Content="ClearItemLists" Click="ClearItemListsOnClick"  />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="2">
                         <Grid Height="50">
@@ -349,6 +351,20 @@
 
 
         </TabControl>
+        
+        <StackPanel x:Name="SettingsMenuStackPanel" Margin="2" Grid.Column="1">
+            <Label Content="Settings" Foreground="#FFD9D3BF" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+            <Button x:Name="SettingsParseItemsButton" Height="40" Content="Parse Items.lua" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" ToolTip="Instead of using an internal list this will read the items from the games data.  If an update adds any items or changes any icons this might be able to recognise it" Click="SettingsParseItemsButtonOnClick"/>
+            <Button x:Name="SetttingsGenerateInfinityButton" Height="40" Content="Generate Infinity Chests" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" ToolTip="Generates infinity chests for every item in the game.  each chest will have inserters feeding into passive provider chests.  Usefull for testing in sandbox worlds" Click="SetttingsGenerateInfinityButtonOnClick"/>
+            <Button x:Name="SettingsSetPrimaryColor" Height="40" Content="Set Primary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
+            <Button x:Name="SettingsSetSecondaryColor" Height="40" Content="Set Secondary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
+            <Button x:Name="SettinsRestoreDefaults" Height="40" Content="Restore Defaults" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
+            <Button x:Name="SettingsApplicationExit" Height="40" Content="Exit" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
+        </StackPanel>
+
+
+        <Button x:Name="SettingsMenuButton" FontSize="20" Content="⚙" HorizontalAlignment="Right" Height="32" Width="32" VerticalAlignment="Top" Margin="3" Click="SettingsMenuButtonOnClick"/>
+        
         <Grid Grid.Row="2" Background="#FF171B1F">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30"/>

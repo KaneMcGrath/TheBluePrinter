@@ -17,6 +17,7 @@ namespace TheBluePrinter
     class GeneratePrinter
     {
         public static string ImageSourcePath = "";
+        public static string ValidFactorioPath = "";
         private static BitmapImage ImagePreview;
         private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
 
@@ -25,7 +26,7 @@ namespace TheBluePrinter
         /// </summary>
         public static void UpdateFactorioPath()
         {
-            string path = WM.MainWindow.FactorioPathTextBox.Text.TrimEnd(new char[] { '/', '\\', ' '}).Trim();
+            string path = WM.MainWindow.FactorioPathTextBox.Text.TrimEnd(new char[] { '/', '\\', ' ' }).Trim();
             if (Directory.Exists(path + "\\data\\base"))
             {
                 Settings.FactorioPath = WM.MainWindow.FactorioPathTextBox.Text;
@@ -34,6 +35,7 @@ namespace TheBluePrinter
                 ResourceLoader.LoadFactorioIcons();
 
                 ItemSelector.ReloadIcons();
+                ValidFactorioPath = path;
             }
 
         }
@@ -60,12 +62,12 @@ namespace TheBluePrinter
                     {
                         Log.New("Loading Image...");
                         LoadImagePreview();
-                        
+
                     }
                 }
             }
         }
-        
+
         /// <summary>
         /// After the ImageSourcePath is determined to be a valid Image or the mipmap value is changed
         /// try loading the image and showing the preview
@@ -73,9 +75,10 @@ namespace TheBluePrinter
         /// </summary>
         public static void LoadImagePreview()
         {
+
             try
             {
-                
+
 
                 Bitmap sourceImage;
                 if (WM.MainWindow.FormatFactorioIconCheckbox.IsChecked == true)
@@ -92,7 +95,7 @@ namespace TheBluePrinter
                     sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
                 }
 
-                
+
                 MemoryStream ms = new MemoryStream();
                 sourceImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
@@ -101,13 +104,13 @@ namespace TheBluePrinter
                 image.StreamSource = ms;
                 image.EndInit();
 
-                
+
                 //BitmapImage image = new BitmapImage();
                 //image.BeginInit();
                 //image.UriSource = new Uri(ImageSourcePath);
                 //image.CacheOption = BitmapCacheOption.OnLoad;
                 //image.EndInit();
-                
+
 
                 ImagePreview = image.Clone();
                 ImagePreview.Freeze();
@@ -121,6 +124,13 @@ namespace TheBluePrinter
             }
         }
 
-
+        public static bool IsFactorioPathValid()
+        {
+            if (Directory.Exists(ValidFactorioPath))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -303,7 +303,7 @@ namespace TheBluePrinter
             
         }
         
-        class LuaItem
+        private class LuaItem
         {
             
             public string itemName;

@@ -44,6 +44,8 @@ namespace TheBluePrinter
 
         }
 
+        
+
         /// <summary>
         /// Loads all icons for each item
         /// its kept seperate from item loading so the factorio path can be chosen at any time
@@ -60,7 +62,7 @@ namespace TheBluePrinter
                 iconsLoaded = true;
                 foreach (Item item in Item.AllItems)
                 {
-                    string icopath = item.IconPath.Replace("__base__", Settings.FactorioPath + "/data/base");
+                    string icopath = item.IconPath.Replace("__base__", Settings.FactorioPath + "\\data\\base");
                     if (File.Exists(icopath))
                     {
                         Bitmap Icon = new Bitmap(icopath);
@@ -147,7 +149,198 @@ namespace TheBluePrinter
                 return;
             }
             Log.New("Items are already loaded!", CC.red);
-        }        
+        }
+
+        /// <summary>
+        /// Reads the items from factorios item.lua file
+        /// this shitty custom parser will probably fail when the game updates too far
+        /// but it might work for a while
+        /// </summary>
+        /// <param name="path"></param>
+        public static void ParseItemsLua()
+        {
+            if (GeneratePrinter.IsFactorioPathValid())
+            {
+                string[] lines = File.ReadAllLines(GeneratePrinter.ValidFactorioPath + "\\data\\base\\item.lua");
+                bool begin = false;
+                bool readingItem = false;
+                List<string> flags = new List<string>();
+
+                string readItemName = "";
+                string readIconPath = "";
+                string[] readFlags = new string[0];
+                int readStackSize = 0;
+                int r, g, b;
+                int bracketOffset = 0;
+
+
+                List<string> nameCollisionCheck = new List<string>();
+                List<LuaItem> itemList = new List<LuaItem>();
+
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+
+                    string line = lines[i].Trim();
+
+                    if (begin)
+                    {
+                        if (readingItem)
+                        {
+                            //Log.New("Line :" + i + "     BracketedOffset :" + bracketOffset);
+                            if (line.StartsWith("name = "))
+                            {
+                                readItemName = line.Split('"')[1];
+                                //Log.New("readItemName: " + readItemName);
+                            }
+                            if (line.StartsWith("icon = "))
+                            {
+                                readIconPath = line.Split('"')[1];
+                                //Log.New("readIconPath :" + readIconPath);
+                            }
+                            if (line.StartsWith("flags = {"))
+                            {
+                                string goods = line.Substring(line.IndexOf('{') + 1).Split('}')[0];
+                                readFlags = goods.Split(',');
+                                //Log.New("readFlags :" + readFlags.ToString());
+                            }
+                            if (line.StartsWith("stack_size"))
+                            {
+                                string s = line.Split('=')[1].TrimEnd(new char[] { ' ', ',' });
+                                readStackSize = int.Parse(s);
+                                //Log.New("readStackSize :" + readStackSize);
+                            }
+                            if (line.Contains("{"))
+                            {
+                                foreach (char c in line)
+                                {
+                                    if (c == '{')
+                                    {
+                                        bracketOffset++;
+                                    }
+                                }
+                            }
+                            if (line.Contains("}"))
+                            {
+                                foreach (char c in line)
+                                {
+                                    if (c == '}')
+                                    {
+                                        if (bracketOffset > 0)
+                                            bracketOffset--;
+                                        else
+                                        {
+
+                                            string icopath = readIconPath.Replace("__base__", Settings.FactorioPath + "\\data\\base");
+                                            Log.New("ICOPath: " + icopath);
+                                            if (!nameCollisionCheck.Contains(readItemName))
+                                            {
+                                                nameCollisionCheck.Add(readItemName);
+                                                if (File.Exists(icopath))
+                                                {
+                                                    Bitmap Icon = new Bitmap(icopath);
+
+                                                    Color av = ImageAnalyzer.AverageColor(Icon);
+
+                                                    r = av.R;
+                                                    g = av.G;
+                                                    b = av.B;
+                                                    Log.New("Processed Icon with Average Color of [" + r.ToString() + "," + g.ToString() + "," + b.ToString() + "]", System.Windows.Media.Color.FromRgb((byte)r, (byte)g, (byte)b));
+
+                                                    itemList.Add(new LuaItem(readItemName, readIconPath, readFlags, readStackSize, r, g, b));
+                                                }
+                                                else
+                                                {
+                                                    itemList.Add(new LuaItem(readItemName, readIconPath, readFlags, readStackSize));
+                                                }
+                                            }
+                                            string resultflags = "";
+                                            foreach (string f in readFlags)
+                                            {
+                                                resultflags = resultflags + f + ",";
+                                            }
+                                            if (resultflags.Length > 0)
+                                            {
+                                                resultflags = resultflags.Remove(resultflags.Length - 1);
+                                            }
+                                            Log.New("Parsed Item \"" + readItemName + "\"  with stacksize :" + readStackSize.ToString() + "  with flags [" + resultflags + "]");
+
+                                            readItemName = "";
+                                            readIconPath = "";
+                                            readFlags = new string[0];
+                                            readStackSize = 0;
+                                            readingItem = false;
+
+
+                                        }
+                                    }
+                                }
+
+
+                                //Log.New("Line end.  BracketOffset :" + bracketOffset);
+
+                            }
+                        }
+                        else if (line == "{")
+                        {
+                            readingItem = true;
+                        }
+
+                    }
+                    else if (line.Contains("data:extend("))
+                    {
+                        begin = true;
+                        i++;
+                    }
+                }
+                Log.New("Parsed " + itemList.Count.ToString() + " Items");
+
+                foreach (LuaItem I in itemList)
+                {
+                    Item newItem = new Item(I.itemName, I.iconPath, I.flags, I.stackSize, Color.FromArgb(I.r, I.g, I.b));
+                    newItem.Init();
+                }
+                itemsLoaded = true;
+            }
+            else
+            {
+                Log.New("Please Enter a valid factorio path", CC.red);
+            }
+        }
+
+        /// <summary>
+        /// I could have just read directly into the Item class 
+        /// but i dont want to rewrite the parse function
+        /// </summary>
+        private class LuaItem
+        {
+
+            public string itemName;
+            public string iconPath;
+            public string[] flags;
+            public int stackSize;
+            public int r, g, b;
+
+            public LuaItem(string name, string icon_path, string[] flags, int stacksize)
+            {
+                itemName = name;
+                iconPath = icon_path;
+                this.flags = flags;
+                stackSize = stacksize;
+            }
+            public LuaItem(string name, string icon_path, string[] flags, int stacksize, int r, int g, int b)
+            {
+                itemName = name;
+                iconPath = icon_path;
+                this.flags = flags;
+                stackSize = stacksize;
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+
+
+        }
     }
 
     /// <summary>

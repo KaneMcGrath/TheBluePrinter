@@ -24,6 +24,11 @@ namespace TheBluePrinter
         /// <returns></returns>
         public static int[,] CreateItemImage(Bitmap input)
         {
+            if (Item.ItemColorLookup.Keys.Count == 0)
+            {
+                Log.New("Failed to create item map: Color averages are not loaded!", CC.red);
+                return null;
+            }
             Log.New("Creating Item Map", CC.yellow);
             lastUsedItems.Clear();
             int[,] result = new int[input.Height, input.Width];
@@ -31,8 +36,10 @@ namespace TheBluePrinter
             {
                 for (int x = 0; x < input.Width; x++)
                 {
+                    
                     Color pixel = input.GetPixel(x, y);
                     Color nearest = NearestAllowedColor(pixel);
+                    
                     string item = Item.ItemColorLookup[nearest];
                     if (!lastUsedItems.Contains(item))
                     {
@@ -200,7 +207,6 @@ namespace TheBluePrinter
 
         public static Bitmap CreatePreviewImage(Bitmap input, bool debugPixels = false, int mipmapLevel = 0)
         {
-
             int iconRes = 64;
             
             if (mipmapLevel == 0)           iconRes = 64;
@@ -210,6 +216,10 @@ namespace TheBluePrinter
             int iconHalf = (iconRes / 2);
             
             int[,] itemMap = CreateItemImage(input);
+            if (itemMap == null)
+            {
+                return null;
+            }
             Log.New("Building Preview", CC.yellow);
             Bitmap result = new Bitmap((input.Width * iconRes) + iconHalf, input.Height * iconRes);
             using (Graphics g = Graphics.FromImage(result))

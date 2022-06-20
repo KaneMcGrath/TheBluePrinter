@@ -67,6 +67,13 @@ namespace TheBluePrinter
                     connectionLookup.Add(inserter, inserterEntity);
                     allEntities.Add(inserterEntity);
                 }
+                if (o.GetType() == typeof(StackInserter))
+                {
+                    StackInserter inserter = (StackInserter)o;
+                    Blueprint.entity inserterEntity = new Blueprint.entity("inserter", new Blueprint.entityComponent[] { inserter.position.AsBlueprintPosition, new Blueprint.direction(inserter.rotation), new Blueprint.insertercontrolbehavior() });
+                    connectionLookup.Add(inserter, inserterEntity);
+                    allEntities.Add(inserterEntity);
+                }
                 if (o.GetType() == typeof(Substation))
                 {
                     Substation s = (Substation)o;
@@ -95,6 +102,11 @@ namespace TheBluePrinter
                     Splitter S = (Splitter)o;
                     allEntities.Add(new Blueprint.entity(splitterType, new Blueprint.entityComponent[] { S.position.AsBlueprintPosition, new Blueprint.direction(S.rotation), new Blueprint.input_priority(S.input_priority ? "left" : "right") }));
 
+                }
+                if(o.GetType() == typeof(PassiveProviderChest))
+                {
+                    PassiveProviderChest P = (PassiveProviderChest)o;
+                    allEntities.Add(new Blueprint.entity("logistic-chest-passive-provider", new Blueprint.entityComponent[] { P.position.AsBlueprintPosition }));
                 }
             }
 
@@ -579,20 +591,29 @@ namespace TheBluePrinter
             return entities;
         }
 
-       // public static List<object> BuildAllInfinityChests()
-       // {
-       //     List<object> result = new List<object>();
-       //
-       //     for (int k = 0; k < Item.AllItems.Count; k++)
-       //     {
-       //         Item i = (Item)Item.AllItems[k];
-       //         if (ImageAnalyzer.ValidNames.Contains(i.name))
-       //             result.Add(new InfinityChest(new pos(k + 0.5f, 0f), i.name, 100));
-       //     }
-       //
-       //
-       //     return result;
-       // }
+        public static List<object> BuildAllInfinityChests()
+        {
+            List<object> result = new List<object>();
+
+            int k = 0;
+            foreach (Item I in Item.AllItems)
+            {
+                bool isHidden = false;
+                foreach (string s in I.Flags)
+                {
+                    if (s == "hidden") isHidden = true;
+                }
+
+                if (!isHidden) { 
+                    result.Add(new InfinityChest(new pos(k + 0.5f, 0f), I.Name, 100));
+                    result.Add(new Inserter(new pos(k + 0.5f, 1f), 0));
+                    result.Add(new PassiveProviderChest(new pos(k + 0.5f, 2f)));
+                    k++;
+                }
+            }
+
+            return result;
+        }
 
         public struct pos
         {
@@ -626,6 +647,19 @@ namespace TheBluePrinter
             public List<Inserter> connections = new List<Inserter>();
 
             public Inserter(pos position, int rotation)
+            {
+                this.position = position;
+                this.rotation = rotation;
+            }
+        }
+        
+        public class StackInserter
+        {
+            public pos position;
+            public int rotation;    //up = 0, right = 2, down = 4, left = 6  grab from side
+            public List<Inserter> connections = new List<Inserter>();
+
+            public StackInserter(pos position, int rotation)
             {
                 this.position = position;
                 this.rotation = rotation;
@@ -717,6 +751,16 @@ namespace TheBluePrinter
                 this.position = position;
                 this.rotation = direction;
                 this.TFinputOrOutput = TFinputOrOutput;
+            }
+        }
+
+        public class PassiveProviderChest
+        {
+            public pos position;
+            
+            public PassiveProviderChest(pos position)
+            {
+                this.position = position;
             }
         }
 
