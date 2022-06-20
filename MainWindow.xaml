@@ -93,12 +93,7 @@
                             <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
                             <Button x:Name="MainWindow21FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Margin="0,0,0,15"/>
                             
-                            <Label x:Name="MainWindow29FGP" Height="30" Content="Belt Type" Foreground="#FF3D659B" ToolTip="The tier of belt to be generated in the blueprint.  Affects the belts, splitters, and underground belts."/>
-                            <ComboBox x:Name="BeltTypeComboBox" ToolTip="The tier of belt to be generated in the blueprint.  Affects the belts, splitters, and underground belts.">
-                                <ComboBoxItem Content="Normal" />
-                                <ComboBoxItem Content="Fast"/>
-                                <ComboBoxItem Content="Express" IsSelected="True"/>
-                            </ComboBox>
+                            
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
