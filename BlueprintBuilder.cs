@@ -70,8 +70,8 @@ namespace TheBluePrinter
                 if (o.GetType() == typeof(StackInserter))
                 {
                     StackInserter inserter = (StackInserter)o;
-                    Blueprint.entity inserterEntity = new Blueprint.entity("inserter", new Blueprint.entityComponent[] { inserter.position.AsBlueprintPosition, new Blueprint.direction(inserter.rotation), new Blueprint.insertercontrolbehavior() });
-                    connectionLookup.Add(inserter, inserterEntity);
+                    Blueprint.entity inserterEntity = new Blueprint.entity("stack-inserter", new Blueprint.entityComponent[] { inserter.position.AsBlueprintPosition, new Blueprint.direction(inserter.rotation), new Blueprint.insertercontrolbehavior() });
+                    //connectionLookup.Add(inserter, inserterEntity);
                     allEntities.Add(inserterEntity);
                 }
                 if (o.GetType() == typeof(Substation))
@@ -536,7 +536,6 @@ namespace TheBluePrinter
                     //add 10 belts
                     for (int l = 0; l < 10 * f; l++)
                     {
-
                         entities.Add(new Belt(new pos(mergeX + 3 + (f * 4), mergeY + 1 + l), 4));
                     }
                     //build 4x turn to the right
@@ -606,7 +605,7 @@ namespace TheBluePrinter
 
                 if (!isHidden) { 
                     result.Add(new InfinityChest(new pos(k + 0.5f, 0f), I.Name, 100));
-                    result.Add(new Inserter(new pos(k + 0.5f, 1f), 0));
+                    result.Add(new StackInserter(new pos(k + 0.5f, 1f), 0));
                     result.Add(new PassiveProviderChest(new pos(k + 0.5f, 2f)));
                     k++;
                 }
@@ -802,7 +801,6 @@ namespace TheBluePrinter
                 this.name = name;
                 lastEntityNumber++;
                 entity_number = lastEntityNumber;
-
             }
             public entity(string name, entityComponent[] components)
             {

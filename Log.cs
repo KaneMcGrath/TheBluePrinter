@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+
 namespace TheBluePrinter
 {
     /// <summary>
@@ -86,6 +87,7 @@ namespace TheBluePrinter
         public static Color red = Log.HextoColor("ff0000");
         public static Color white = Log.HextoColor("ffffff");
         public static Color yellow = Log.HextoColor("ffc600");
+        public static Color green = Log.HextoColor("00ff00");
     }
     /// <summary>
     /// Holds a individual message and all of its properties

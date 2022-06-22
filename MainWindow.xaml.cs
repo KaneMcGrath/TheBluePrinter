@@ -6,7 +6,9 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace TheBluePrinter
 {
@@ -24,6 +26,9 @@ namespace TheBluePrinter
             ItemSelector.LoadItems();
             FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
             ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\images\\textures\\blocks\\bookshelf.png";
+            SettingsColumnWidth.Width = new GridLength(0);
+            SettingsMenuStackPanel.Visibility = Visibility.Hidden;
+            WM.SettingsMenuOpen = false;
             Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
             Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
             WM.UpdateColors();
@@ -301,6 +306,7 @@ namespace TheBluePrinter
                 image = new Bitmap(GeneratePrinter.ImageSourcePath);
             }
             ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), 2));
+            Log.New("Generated Printer", CC.green);
         }
 
         private void GeneratePreviewOnClick(object sender, RoutedEventArgs e)
@@ -347,22 +353,12 @@ namespace TheBluePrinter
 
         private void Pick_Primary_Color_Button_OnClick(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                Settings.PrimaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-                WM.UpdateColors();
-            }
+            
         }
 
         private void Pick_Secondary_Color_Button_OnClick(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                Settings.SecondaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-                WM.UpdateColors();
-            }
+            
         }
 
         // "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF"
@@ -438,6 +434,7 @@ namespace TheBluePrinter
 
         private void SettingsParseItemsButtonOnClick(object sender, RoutedEventArgs e)
         {
+            Log.New("Reading Factorio Data", CC.yellow);
             ResourceLoader.itemsLoaded = false;
             ResourceLoader.iconsLoaded = false;
             Item.ClearItemsData();
@@ -451,11 +448,45 @@ namespace TheBluePrinter
         {
             Item.ClearItemsData();
             ItemSelector.ClearLists();
+
         }
 
         private void SetttingsGenerateInfinityButtonOnClick(object sender, RoutedEventArgs e)
         {
             ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildAllInfinityChests()));
+            Log.New("Generated Infinity Chest Blueprint", CC.green);
+        }
+
+        private void SettingsSetPrimaryColorOnClick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Settings.PrimaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                WM.UpdateColors();
+            }
+        }
+
+        private void SettingsSetSecondaryColorOnClick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Settings.SecondaryColor = System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                WM.UpdateColors();
+            }
+        }
+
+        private void SettinsRestoreDefaultsOnClick(object sender, RoutedEventArgs e)
+        {
+            Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
+            Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
+            WM.UpdateColors();
+        }
+
+        private void SettingsApplicationExitOnClick(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

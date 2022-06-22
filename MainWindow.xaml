@@ -356,10 +356,10 @@
             <Label Content="Settings" Foreground="#FFD9D3BF" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,4"/>
             <Button x:Name="SettingsParseItemsButton" Height="40" Content="Parse Items.lua" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" ToolTip="Instead of using an internal list this will read the items from the games data.  If an update adds any items or changes any icons this might be able to recognise it" Click="SettingsParseItemsButtonOnClick"/>
             <Button x:Name="SetttingsGenerateInfinityButton" Height="40" Content="Generate Infinity Chests" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" ToolTip="Generates infinity chests for every item in the game.  each chest will have inserters feeding into passive provider chests.  Usefull for testing in sandbox worlds" Click="SetttingsGenerateInfinityButtonOnClick"/>
-            <Button x:Name="SettingsSetPrimaryColor" Height="40" Content="Set Primary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
-            <Button x:Name="SettingsSetSecondaryColor" Height="40" Content="Set Secondary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
-            <Button x:Name="SettinsRestoreDefaults" Height="40" Content="Restore Defaults" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
-            <Button x:Name="SettingsApplicationExit" Height="40" Content="Exit" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B"/>
+            <Button x:Name="SettingsSetPrimaryColor" Height="40" Content="Set Primary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" Click="SettingsSetPrimaryColorOnClick"/>
+            <Button x:Name="SettingsSetSecondaryColor" Height="40" Content="Set Secondary Color" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" Click="SettingsSetSecondaryColorOnClick"/>
+            <Button x:Name="SettinsRestoreDefaults" Height="40" Content="Restore Defaults" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" Click="SettinsRestoreDefaultsOnClick"/>
+            <Button x:Name="SettingsApplicationExit" Height="40" Content="Exit" FontSize="18" FontWeight="Bold" Foreground="#FF3D659B" Click="SettingsApplicationExitOnClick"/>
         </StackPanel>
 
 

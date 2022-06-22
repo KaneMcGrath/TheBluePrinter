@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Documents;
+using System.Windows.Threading;
 
 namespace TheBluePrinter
 {
@@ -24,19 +25,19 @@ namespace TheBluePrinter
         public static bool SettingsMenuOpen = false;
 
         /// <summary>
-        /// Will display the last log message at the bottem and ensure it is the correct color
+        /// Updates the text at the bottom
         /// </summary>
         /// <param name="message"></param>
         public static void UpdateLatestLogMessage(LogMessage message)
         {
-            MainWindow.LogTextLatestMainWindow.Content = message.Content;
+            WM.MainWindow.LogTextLatestMainWindow.Content = message.Content;
             if (message.MessageColor != LogMessage.DefaultColor)
             {
-                MainWindow.LogTextLatestMainWindow.Foreground = new SolidColorBrush(message.MessageColor);
+                WM.MainWindow.LogTextLatestMainWindow.Foreground = new SolidColorBrush(message.MessageColor);
             }
             else
             {
-                MainWindow.LogTextLatestMainWindow.Foreground = new SolidColorBrush(CC.white);
+                WM.MainWindow.LogTextLatestMainWindow.Foreground = new SolidColorBrush(CC.white);
             }
         }
 
@@ -121,6 +122,12 @@ namespace TheBluePrinter
             MainWindow.AllowedItemsSelectedCountRectangle.Foreground = Primary;
             MainWindow.AllItemsTotalCountRectangle.Foreground = Primary;
             MainWindow.AllowedItemsTotalCountRectangle.Foreground = Primary;
+            MainWindow.SettingsParseItemsButton.Foreground = Primary;
+            MainWindow.SetttingsGenerateInfinityButton.Foreground = Primary;
+            MainWindow.SettingsSetPrimaryColor.Foreground = Primary;
+            MainWindow.SettingsSetSecondaryColor.Foreground = Primary;
+            MainWindow.SettingsApplicationExit.Foreground = Primary;
+            MainWindow.SettinsRestoreDefaults.Foreground = Primary;
             //MainWindow.MainWindow40FGP.Fill = Primary;
             //MainWindow.MainWindow41FGP.Fill = Primary;
 

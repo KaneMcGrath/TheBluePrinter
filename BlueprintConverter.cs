@@ -177,7 +177,7 @@ namespace TheBluePrinter
                 return jsonString;
             }
         }
-       
+        
 
         /// <summary>
         /// This took an hour to get working
