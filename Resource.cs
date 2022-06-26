@@ -50,30 +50,49 @@ namespace TheBluePrinter
         /// Loads all icons for each item
         /// its kept seperate from item loading so the factorio path can be chosen at any time
         /// </summary>
-        public static void LoadFactorioIcons()
+        public static int LoadFactorioIcons()
         {
+            int successState = 2; //0:success 1:someNotLoaded 2:AllNotLoaded 3:itemsNotLoaded 4:iconsAlreadyLoaded
             if (!itemsLoaded) 
             { 
                 Log.New("Cannot load icons untill items are loaded!", CC.red);
-                return;
+                return 3;
             }
             if (!iconsLoaded)
             {
-                iconsLoaded = true;
+                bool someLoaded = false;
+                bool allLoaded = true;
                 foreach (Item item in Item.AllItems)
                 {
-                    string icopath = item.IconPath.Replace("__base__", Settings.FactorioPath + "\\data\\base");
-                    if (File.Exists(icopath))
-                    {
-                        Bitmap Icon = new Bitmap(icopath);
-                        item.Icon = Icon;
+                    if (item.IconPath != "") 
+                    { 
+                        string icopath = item.IconPath.Replace("__base__", Settings.FactorioPath + "\\data\\base");
+                        
+                        if (File.Exists(icopath))
+                        {
+                            Bitmap Icon = new Bitmap(icopath);
+                            item.Icon = Icon;
+                            someLoaded = true;
+                        }
+                        else
+                        {
+                            allLoaded = false;
+                            Log.New("Could not find icon for item " + item.Name + " at [" + icopath + "]",CC.red);
+                        }
+                        if (allLoaded)
+                        {
+                            successState = 0;
+                        }
+                        else
+                        {
+                            if (someLoaded) successState = 1;
+                            else successState = 2;
+                        }
                     }
                 }
+                return successState;
             }
-            else
-            {
-                Log.New("Icons are already loaded!", CC.red);
-            }
+            return 4;
         }
         
         public static void LoadDefaultItems()
@@ -92,7 +111,7 @@ namespace TheBluePrinter
         {
             if (!itemsLoaded)
             {
-                string[] lines = File.ReadAllLines("Data/items.txt");
+                string[] lines = File.ReadAllLines("Data\\items.txt");
                 string name = "";
                 string icon = "";
                 List<string> Flags = new List<string>();
@@ -161,7 +180,7 @@ namespace TheBluePrinter
         {
             if (GeneratePrinter.IsFactorioPathValid())
             {
-                string[] lines = File.ReadAllLines(GeneratePrinter.ValidFactorioPath + "\\data\\base\\item.lua");
+                string[] lines = File.ReadAllLines(GeneratePrinter.ValidFactorioPath + "\\data\\base\\prototypes\\item.lua");
                 bool begin = false;
                 bool readingItem = false;
                 List<string> flags = new List<string>();

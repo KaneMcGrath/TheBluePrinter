@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TheBluePrinter"
         mc:Ignorable="d"
-        Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="250" MinHeight="220" Initialized="MainWindowInit" Closing="OnClosing" KeyDown="Key_Down" KeyUp="Key_Up">
+        Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="450" MinHeight="420" Initialized="MainWindowInit" Closing="OnClosing" KeyDown="Key_Down" KeyUp="Key_Up">
     
     <Grid>
         <Grid.ColumnDefinitions>
@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="24"/>
+            <RowDefinition Height="28"/>
         </Grid.RowDefinitions>
         <TabControl x:Name="MainWindow1BGS" Background="#FFD9D3BF" BorderBrush="#00A65757" Foreground="White" Grid.ColumnSpan="1">
             <TabItem x:Name="MainWindow2FGP" Header="Generate Printer" Background="#FFE5E5E5" Foreground="#FF3D659B" FontWeight="Bold" Height="35" FontSize="16">
@@ -33,7 +33,7 @@
                         </Grid.RowDefinitions>
 
                         <TabControl Grid.Row="0" TabStripPlacement="Bottom">
-                            <TabItem x:Name="MainWindow4FGP" Header="Image" Foreground="#FF3D659B">
+                            <TabItem x:Name="MainWindow4FGP" Header="Image" Foreground="#FF3D659B"  FontSize="16">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
@@ -44,7 +44,7 @@
                                 </Grid>
                             </TabItem>
 
-                            <TabItem x:Name="MainWindow6FGP" Header="Preview" Foreground="#FF3D659B">
+                            <TabItem x:Name="MainWindow6FGP" Header="Preview" Foreground="#FF3D659B" FontSize="16">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
@@ -56,19 +56,33 @@
                                 </Grid>
                             </TabItem>
                         </TabControl>
-                        <Grid Grid.Row="1" Margin="8,10,8,6">
+                        <Grid Grid.Row="1" Margin="6">
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel HorizontalAlignment="Left" Width="250" Margin="0,28,0,0">
+                            <StackPanel HorizontalAlignment="Left" Margin="0,28,0,0">
 
                                 <Button x:Name="MainWindow8FGP" Height="30" Content="Generate Printer" Foreground="#FF3D659B" Click="GeneratePrinterOnClick"/>
-                                <Rectangle Height="15"/>
+                                
                                 <Button x:Name="MainWindow9FGP" Height="30" Content="Generate Preview" Foreground="#FF3D659B" Click="GeneratePreviewOnClick"/>
                                 <Label x:Name="MainWindow10FGS" Height="30" Content="Icon Resolution" Foreground="#FFD9D3BF" ToolTip="The resolution of the icons used in the preview image.  For large images, use smaller icon resolutions"/>
                                 <Slider x:Name="IconResolutionSlider" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
+                                <Grid Margin="8,0,8,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="4*"/>
+                                        <ColumnDefinition Width="8*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label x:Name="PreviewTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <Label x:Name="PreviewTicks2" Grid.Column="1" Content="16" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <Label x:Name="PreviewTicks3" Grid.Column="2" Content="32" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <Label x:Name="PreviewTicks4" Grid.Column="3" Content="64" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+
+
+                                </Grid>
                                 <Label Content="Warning! High Values can generate huge images" Foreground="Red" FontSize="10" Height="25" ToolTip="The Icon resolution will be multiplied by your image size.  If your image is larger than 64x64 I would recommend a lower icon size for the preview image."/>
                             </StackPanel>
                             <Grid Grid.Column="1">
@@ -78,7 +92,7 @@
                                 </Grid.RowDefinitions>
 
                                 <Label x:Name="MainWindow11FGS" Height="30" Content="Result blueprint" Foreground="#FFD9D3BF"/>
-                                <Button x:Name="MainWindow12FGP" Content="Copy" Foreground="#FF3D659B" MinWidth="45" MaxWidth="100" HorizontalAlignment="Right"/>
+                                <Button x:Name="MainWindow12FGP" Content="Copy" Foreground="#FF3D659B" MinWidth="45" MaxWidth="100" HorizontalAlignment="Right" Click="CopyResultBlueprintOnClick"/>
 
                                 <TextBox x:Name="ResultTextBox" Grid.Row="1" IsReadOnly="True" IsUndoEnabled="False"/>
                             </Grid>
@@ -89,15 +103,57 @@
                             
                             <Label x:Name="MainWindow15FGP" Height="30" Content="Image Source Path" Foreground="#FF3D659B" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
                             <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
-                            <Button x:Name="MainWindow16FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" UseLayoutRounding="True" Margin="0,0,0,30"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="Reload1" Height="30"  HorizontalAlignment="Stretch" Content="Reload" Foreground="#FF3D659B" Click="OnClickReloadImage" Grid.Column="0" Margin="0"/>
+                                <Button x:Name="MainWindow16FGP" Height="30" HorizontalAlignment="Stretch" Content="Browse..." Foreground="#FF3D659B" Click="OnClickImageSourcePath" Grid.Column="1" Margin="0"/>
+                            </Grid>
+
+
                             <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick" ToolTip="If you choose a image from the factorio (data\base\graphics\icons) folder, this will format the image to a selected mipmap level" HorizontalAlignment="Stretch"/>
-                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed"  Grid.Column="1" Margin="8,0,8,15" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
+                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
+
+                            <Grid x:Name="IconSourceResolutionSliderTickGrid" Margin="8,0,8,0" Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="18"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="8*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label x:Name="ICOTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <Label x:Name="ICOTicks2" Grid.Column="1" Content="16" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <Label x:Name="ICOTicks3" Grid.Column="2" Content="32" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <Label x:Name="ICOTicks4" Grid.Column="3" Content="64" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             
-                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images." Margin="0,30,0,0"/>
+                                
+                            </Grid>        
+                            <Grid Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="BackgroundColor" Height="30"  HorizontalAlignment="Stretch" Content="Set Alpha Color" ToolTip="If your image has any transparency this color will replace it" Foreground="#FF3D659B" Click="SetBackgroundColorOnClick" Grid.Column="0" Margin="0,0,0,0"/>
+                                <Rectangle Grid.Column="1" x:Name="BackGroundColorPreviewRectangle" Fill="Black"/>
+                            </Grid>
+                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images." Margin="-4,20,0,0"/>
                             <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
-                            <Button x:Name="MainWindow21FGP" Height="30" Width="150" HorizontalAlignment="Right" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Margin="0,0,0,15"/>
+                            
 
                             
+                            <Grid Margin="0,0,0,30" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Button x:Name="Reload" Height="30"  HorizontalAlignment="Stretch" Content="Reload" Foreground="#FF3D659B" Click="OnClickReloadFactorioSource" Grid.Column="0" Margin="0,0,0,0"/>
+                                <Button x:Name="MainWindow21FGP" Height="30"  HorizontalAlignment="Stretch" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Grid.Column="1" Margin="0,0,0,0"/>
+                            </Grid>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
@@ -156,7 +212,7 @@
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Margin="8">
                                 <Button x:Name="ISMoveButton" Content="Move Selected" Height="40" Margin="0,5,0,5" Click="ISMoveButtonOnClick" Foreground="#FF3D659B"/>
-                                <CheckBox x:Name="ISClickToMove" Content="Click to move" Margin="0,5,0,5" ToolTip="Click an item to allow or dissalow it instead of selecting it" Checked="ISClickToMoveChecked" Unchecked="ISClickToMoveUnchecked" Foreground="#FF3D659B"/>
+                                <CheckBox x:Name="ISClickToMove" Content="Click to move" Margin="0,5,0,5" ToolTip="Click an item to allow or dissalow it instead of selecting it" Checked="ISClickToMoveChecked" Unchecked="ISClickToMoveUnchecked" Foreground="#FF3D659B" HorizontalAlignment="Center"/>
                                 
                             </StackPanel>
                             <Grid Height="120" Grid.Row="1" Margin="0,30,0,0">
@@ -268,86 +324,7 @@
                 </Grid>
                 
             </TabItem>
-            <TabItem x:Name="MainWindow37FGP"  Header="Application Settings" FontWeight="Bold" FontSize="16" Foreground="#FF3D659B">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="300"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="1">
-                        <Button x:Name="TestItemParsing" Height="50" Content="ParseItems" Click="ParseItemsOnClick" />
-                        <Button x:Name="PrintAllFlags" Height="50" Content="LogAllFlags" Click="LogAllFlagsOnClick" />
-                        <Button x:Name="LoadAllItems" Height="50" Content="LoadItems" Click="OnClickLoadAllItems" />
-                        <Button x:Name="LoadAllIcons" Height="50" Content="LoadIcons" Click="OnClickLoadAllIcons" />
-                        <Button x:Name="AverageColorButton" Height="50" Content="AverageColorButton" Click="AverageColorButtonOnClick" />
-                        <Button x:Name="GenerateItemCode" Height="50" Content="GenerateItemCode" Click="GenerateItemCodeOnClick"  />
-                        <Button x:Name="ClearItemLists" Height="50" Content="ClearItemLists" Click="ClearItemListsOnClick"  />
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="2">
-                        <Grid Height="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="#566258"/>
-                            <Rectangle Grid.Column="1" Fill="#cfccbd"/>
-                            <Button x:Name="ApplyScheme1" Grid.Column="2" Content="Apply" Click="ApplyScheme1Click"/>
-                        </Grid>
-                        <Grid Height="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="#FF313131"/>
-                            <Rectangle Grid.Column="1" Fill="#FFFFAD5A"/>
-                            <Button x:Name="ApplyScheme2" Grid.Column="2" Content="Apply" Click="ApplyScheme2Click"/>
-                        </Grid>
-                        <Grid Height="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="#3d659b"/>
-                            <Rectangle Grid.Column="1" Fill="#d9d3bf"/>
-                            <Button x:Name="ApplyScheme3" Grid.Column="2" Content="Apply" Click="ApplyScheme3Click"/>
-                        </Grid>
-                        <Grid Height="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="#313131"/>
-                            <Rectangle Grid.Column="1" Fill="#c6c6c6"/>
-                            <Button x:Name="ApplyScheme4" Grid.Column="2" Content="Apply" Click="ApplyScheme4Click"/>
-                        </Grid>
-                        <Grid Height="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="#433b45"/>
-                            <Rectangle Grid.Column="1" Fill="#f79a76"/>
-                            <Button x:Name="ApplyScheme5" Grid.Column="2" Content="Apply" Click="ApplyScheme5Click"/>
-                        </Grid>
-                        <Button Height="50" x:Name="Pick_Primary_Color_Button" Content="Pick Primary" Click="Pick_Primary_Color_Button_OnClick" />
-                        <Button Height="50" x:Name="Pick_Secondary_Color_Button" Content="Pick Secondary" Click="Pick_Secondary_Color_Button_OnClick" />
-
-                    </StackPanel>
-                </Grid>
-                            
-                
             
-            </TabItem>
 
 
         </TabControl>

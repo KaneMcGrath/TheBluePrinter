@@ -158,6 +158,17 @@ namespace TheBluePrinter
             return r + g + b;
         }
 
+        public static Bitmap FillAlphaChannel(Bitmap image, Color color)
+        {
+            Bitmap result = (Bitmap)image.Clone();
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.Clear(color);
+                g.DrawImage(image, 0, 0);
+            }
+            return result;
+        }
+
         /// <summary>
         /// crops a factorio icon into the selected mipmap
         /// </summary>
@@ -220,6 +231,9 @@ namespace TheBluePrinter
             {
                 return null;
             }
+
+            if (File.Exists(GeneratePrinter.ValidFactorioPath + "\\data\\base\\graphics\\entity\\express-transport-belt\\"))
+
             Log.New("Building Preview", CC.yellow);
             Bitmap result = new Bitmap((input.Width * iconRes) + iconHalf, input.Height * iconRes);
             using (Graphics g = Graphics.FromImage(result))

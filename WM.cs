@@ -104,7 +104,6 @@ namespace TheBluePrinter
             MainWindow.CVBlueprintPaste.Foreground = Primary;
             MainWindow.CVJSONCopy.Foreground = Primary;
             MainWindow.CVJSONPaste.Foreground = Primary;
-            MainWindow.MainWindow37FGP.Foreground = Primary;
             MainWindow.MainWindow38FGP.Foreground = Primary;
             MainWindow.MainWindow39FGP.Foreground = Primary;
             //MainWindow.ISFGTitleBar.Fill = Primary;
@@ -130,8 +129,20 @@ namespace TheBluePrinter
             MainWindow.SettinsRestoreDefaults.Foreground = Primary;
             //MainWindow.MainWindow40FGP.Fill = Primary;
             //MainWindow.MainWindow41FGP.Fill = Primary;
+            MainWindow.Reload.Foreground = Primary;
+            MainWindow.Reload1.Foreground = Primary;
+            MainWindow.ICOTicks1.Foreground = Primary;
+            MainWindow.ICOTicks2.Foreground = Primary;
+            MainWindow.ICOTicks3.Foreground = Primary;
+            MainWindow.ICOTicks4.Foreground = Primary;
+            MainWindow.BackgroundColor.Foreground = Primary;
+            MainWindow.PreviewTicks1.Foreground = Secondary;
+            MainWindow.PreviewTicks2.Foreground = Secondary;
+            MainWindow.PreviewTicks3.Foreground = Secondary;
+            MainWindow.PreviewTicks4.Foreground = Secondary;
 
-            
+
+
             Log.New("Updated Primary Color to :" + Primary.ToString(), Settings.PrimaryColor);
             Log.New("Updated Secondary Color to :" + Secondary.ToString(), Settings.SecondaryColor);
 

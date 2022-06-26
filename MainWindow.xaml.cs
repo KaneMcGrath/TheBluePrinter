@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows;
@@ -24,8 +25,7 @@ namespace TheBluePrinter
             InitializeComponent();
             ResourceLoader.LoadDefaultItems();
             ItemSelector.LoadItems();
-            FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
-            ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\images\\textures\\blocks\\bookshelf.png";
+
             SettingsColumnWidth.Width = new GridLength(0);
             SettingsMenuStackPanel.Visibility = Visibility.Hidden;
             WM.SettingsMenuOpen = false;
@@ -288,7 +288,27 @@ namespace TheBluePrinter
 
         private void GeneratePrinterOnClick(object sender, RoutedEventArgs e)
         {
- 
+            string source = ImageSourcePathTextBox.Text;
+            bool flag = false;
+            if (File.Exists(source))
+            {
+                string extention = source.Split('.')[1].Trim().ToUpper();
+
+                foreach (string ext in GeneratePrinter.SupportedImageTypes)
+                {
+                    if (ext == extention) flag = true;
+                }
+                if (!flag)
+                {
+                    Log.New("This image type is not supported.  Supported types are [BMP, GIF, EXIF, JPG, PNG, TIFF]", CC.red);
+                    return;
+                }
+            }
+            else
+            {
+                Log.New("Please choose an image under \"Image Source Path\"", CC.red);
+                return;
+            }
 
             int mipmapLevel = 0;
             if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
@@ -299,18 +319,45 @@ namespace TheBluePrinter
             Bitmap image;
             if (FormatFactorioIconCheckbox.IsChecked == true)
             {
-                image = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+                image = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), GeneratePrinter.AlphaFillColor);
             }
             else
             {
-                image = new Bitmap(GeneratePrinter.ImageSourcePath);
+                ImageAnalyzer.FillAlphaChannel(image = new Bitmap(GeneratePrinter.ImageSourcePath), GeneratePrinter.AlphaFillColor);
             }
             ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), 2));
             Log.New("Generated Printer", CC.green);
+            image.Dispose();
         }
 
         private void GeneratePreviewOnClick(object sender, RoutedEventArgs e)
         {
+            if (!GeneratePrinter.IsFactorioPathValid())
+            {
+                Log.New("You need to select a factorio path in order to generate a preview", CC.red);
+                return;
+            }
+            string source = ImageSourcePathTextBox.Text;
+            bool flag = false;
+            if (File.Exists(source))
+            {
+                string extention = source.Split('.')[1].Trim().ToUpper();
+                
+                foreach (string ext in GeneratePrinter.SupportedImageTypes)
+                {
+                    if (ext == extention) flag = true;
+                }
+                if (!flag)
+                {
+                    Log.New("This image type is not supported.  Supported types are [BMP, GIF, EXIF, JPG, PNG, TIFF]", CC.red);
+                    return;
+                }
+            }
+            else
+            {
+                Log.New("Please choose an image under \"Image Source Path\"", CC.red);
+                return;
+            }
             int mipmapLevel = 0;
             if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
             if (IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
@@ -326,11 +373,11 @@ namespace TheBluePrinter
                 Bitmap sourceImage;
                 if (FormatFactorioIconCheckbox.IsChecked == true)
                 {
-                    sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+                    sourceImage = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), GeneratePrinter.AlphaFillColor);
                 }
                 else
                 {
-                    sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
+                    sourceImage = ImageAnalyzer.FillAlphaChannel(new Bitmap(GeneratePrinter.ImageSourcePath), GeneratePrinter.AlphaFillColor);
                 }
 
                 Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
@@ -344,13 +391,14 @@ namespace TheBluePrinter
                 image.EndInit();
                 PreviewGeneratedImage.Source = image;
                 PreviewImageReminderLabel.Visibility = Visibility.Hidden;
+                sourceImage.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.New(ex.Message, CC.red);
             }
+            
         }
-
         private void Pick_Primary_Color_Button_OnClick(object sender, RoutedEventArgs e)
         {
             
@@ -392,10 +440,12 @@ namespace TheBluePrinter
             if (FormatFactorioIconCheckbox.IsChecked == true)
             {
                 IconSourceResolutionSlider.Visibility = Visibility.Visible;
+                IconSourceResolutionSliderTickGrid.Visibility = Visibility.Visible;
             }
             else
             {
                 IconSourceResolutionSlider.Visibility = Visibility.Collapsed;
+                IconSourceResolutionSliderTickGrid.Visibility = Visibility.Collapsed;
             }
             if (File.Exists(GeneratePrinter.ImageSourcePath))
             {
@@ -422,6 +472,7 @@ namespace TheBluePrinter
             {
                 SettingsColumnWidth.Width = new GridLength(0);
                 SettingsMenuStackPanel.Visibility = Visibility.Hidden;
+
                 WM.SettingsMenuOpen = false;
             }
             else
@@ -487,6 +538,37 @@ namespace TheBluePrinter
         private void SettingsApplicationExitOnClick(object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void OnClickReloadImage(object sender, RoutedEventArgs e)
+        {
+
+            GeneratePrinter.UpdateImageSourcePath(true);
+        }
+
+        private void OnClickReloadFactorioSource(object sender, RoutedEventArgs e)
+        {
+            GeneratePrinter.lastFactorioPath = "";
+            GeneratePrinter.UpdateFactorioPath();
+        }
+
+        private void CopyResultBlueprintOnClick(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(ResultTextBox.Text);
+        }
+
+        private void SetBackgroundColorOnClick(object sender, RoutedEventArgs e)
+        {
+            
+
+            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            colorDialog.CustomColors = new int[] { 7431760, 3561115, 8816262, 5729973, 2369580, 7501173 };
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                GeneratePrinter.AlphaFillColor = colorDialog.Color;
+                BackGroundColorPreviewRectangle.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
+            }
+            GeneratePrinter.UpdateImageSourcePath(true);
         }
     }
 }

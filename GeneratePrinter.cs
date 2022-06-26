@@ -19,21 +19,41 @@ namespace TheBluePrinter
         public static string ImageSourcePath = "";
         public static string ValidFactorioPath = "";
         private static BitmapImage ImagePreview;
-        private static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
+        public static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
+        public static Color AlphaFillColor = Color.Black;
 
+
+        public static string lastFactorioPath = "";
         /// <summary>
         /// Updates the factorio path and loads all of the Icons
         /// </summary>
         public static void UpdateFactorioPath()
-        {
+        {//0:success 1:someNotLoaded 2:AllNotLoaded 3:itemsNotLoaded 4:iconsAlreadyLoaded
             string path = WM.MainWindow.FactorioPathTextBox.Text.TrimEnd(new char[] { '/', '\\', ' ' }).Trim();
+            if (path == lastFactorioPath) return;
+            lastFactorioPath = path;
             if (Directory.Exists(path + "\\data\\base"))
             {
                 Settings.FactorioPath = WM.MainWindow.FactorioPathTextBox.Text;
                 Log.New("Factorio game folder found " + path);
                 Log.New("Loading Icons", CC.yellow);
-                ResourceLoader.LoadFactorioIcons();
-
+                int succsessState = 0;
+                try
+                {
+                    succsessState = ResourceLoader.LoadFactorioIcons();
+                }
+                catch (Exception ex)
+                {
+                    Log.New("Failed to load icons!.  " + ex.Message);
+                }
+                if (succsessState == 0)
+                    Log.New("Icons loaded!", CC.green);
+                if (succsessState == 1)
+                    Log.New("Some Icons were not loaded properly!", CC.red);
+                if (succsessState == 2)
+                    Log.New("Icons could not be loaded!", CC.red);
+                if (succsessState == 3)
+                    Log.New("Items are not loaded!", CC.red);
                 ItemSelector.ReloadIcons();
                 ValidFactorioPath = path;
             }
@@ -44,9 +64,9 @@ namespace TheBluePrinter
         /// Called every time text is entered into the Image source path text box
         /// checks if the file exists and if it is an image file then attempts to load it
         /// </summary>
-        public static void UpdateImageSourcePath()
+        public static void UpdateImageSourcePath(bool reload = false)
         {
-            if (WM.MainWindow.ImageSourcePathTextBox.Text != ImageSourcePath)
+            if ((WM.MainWindow.ImageSourcePathTextBox.Text != ImageSourcePath) || reload)
             {
                 ImageSourcePath = WM.MainWindow.ImageSourcePathTextBox.Text;
 
@@ -63,6 +83,10 @@ namespace TheBluePrinter
                         Log.New("Loading Image...");
                         LoadImagePreview();
 
+                    }
+                    else
+                    {
+                        Log.New("This image type is not supported.  Supported types are [BMP, GIF, EXIF, JPG, PNG, TIFF]", CC.red);
                     }
                 }
             }
@@ -88,11 +112,11 @@ namespace TheBluePrinter
                     if (WM.MainWindow.IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
                     if (WM.MainWindow.IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
                     if (WM.MainWindow.IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
-                    sourceImage = ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel);
+                    sourceImage = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), AlphaFillColor);
                 }
                 else
                 {
-                    sourceImage = new Bitmap(GeneratePrinter.ImageSourcePath);
+                    sourceImage = ImageAnalyzer.FillAlphaChannel(new Bitmap(GeneratePrinter.ImageSourcePath), AlphaFillColor);
                 }
 
 
@@ -104,7 +128,7 @@ namespace TheBluePrinter
                 image.StreamSource = ms;
                 image.EndInit();
 
-
+                sourceImage.Dispose();
                 //BitmapImage image = new BitmapImage();
                 //image.BeginInit();
                 //image.UriSource = new Uri(ImageSourcePath);
@@ -114,6 +138,7 @@ namespace TheBluePrinter
 
                 ImagePreview = image.Clone();
                 ImagePreview.Freeze();
+                
                 WM.MainWindow.UserImagePreview.Source = ImagePreview;
                 Log.New("Loaded Image " + ImageSourcePath);
                 WM.MainWindow.SourceImageReminderLabel.Visibility = System.Windows.Visibility.Hidden;
