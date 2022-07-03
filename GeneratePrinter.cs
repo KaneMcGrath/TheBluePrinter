@@ -18,10 +18,12 @@ namespace TheBluePrinter
     {
         public static string ImageSourcePath = "";
         public static string ValidFactorioPath = "";
+        public static Bitmap sourceImage;
         private static BitmapImage ImagePreview;
         public static string[] SupportedImageTypes = { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
         public static Color AlphaFillColor = Color.Black;
-
+        public static int resizeX = 0;
+        public static int resizeY = 0;
 
         public static string lastFactorioPath = "";
         /// <summary>
@@ -34,6 +36,7 @@ namespace TheBluePrinter
             lastFactorioPath = path;
             if (Directory.Exists(path + "\\data\\base"))
             {
+                
                 Settings.FactorioPath = WM.MainWindow.FactorioPathTextBox.Text;
                 Log.New("Factorio game folder found " + path);
                 Log.New("Loading Icons", CC.yellow);
@@ -62,7 +65,7 @@ namespace TheBluePrinter
 
         /// <summary>
         /// Called every time text is entered into the Image source path text box
-        /// checks if the file exists and if it is an image file then attempts to load it
+        /// checks if the file exists and if it is an image file, it then attempts to load it
         /// </summary>
         public static void UpdateImageSourcePath(bool reload = false)
         {
@@ -81,6 +84,9 @@ namespace TheBluePrinter
                     if (flag)
                     {
                         Log.New("Loading Image...");
+                        Bitmap LoadedImage = new Bitmap(ImageSourcePath);
+                        sourceImage = (Bitmap)LoadedImage.Clone();
+                        LoadedImage.Dispose();
                         LoadImagePreview();
 
                     }
@@ -93,42 +99,65 @@ namespace TheBluePrinter
         }
 
         /// <summary>
+        /// Gets all of the filters applied and creates an image withh all applied
+        /// </summary>
+        /// <returns></returns>
+        public static Bitmap CreateFilteredImage(Bitmap Source)
+        {
+            Bitmap result = Source;
+            result = ImageAnalyzer.FillAlphaChannel(result, AlphaFillColor);
+            if (WM.MainWindow.FormatFactorioIconCheckbox.IsChecked == true)
+            {
+                int mipmapLevel = 0;
+                if (WM.MainWindow.IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
+                if (WM.MainWindow.IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
+                if (WM.MainWindow.IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
+                if (WM.MainWindow.IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
+                result = ImageAnalyzer.FormatFactorioIconImage(result, mipmapLevel);
+            }
+            if (WM.MainWindow.ResizeImageCheckbox.IsChecked == true)
+            {
+                int width = 0;
+                int height = 0;
+                if (int.TryParse(WM.MainWindow.RICGTextBoxX.Text, out width) && int.TryParse(WM.MainWindow.RICGTextBoxY.Text, out height))
+                {
+                    
+                    result = ImageAnalyzer.ResizeImage(result, width, height);
+
+                }
+                else
+                {
+                    Log.New("Could not resize image: unable to parse width or height", CC.red);
+                    return null;
+                }
+                
+            }
+            return result;
+        }
+
+        /// <summary>
         /// After the ImageSourcePath is determined to be a valid Image or the mipmap value is changed
         /// try loading the image and showing the preview
         /// This is not the one made of items, just the image you want to convert
         /// </summary>
         public static void LoadImagePreview()
         {
+            if(sourceImage == null) return;
 
             try
             {
-
-
-                Bitmap sourceImage;
-                if (WM.MainWindow.FormatFactorioIconCheckbox.IsChecked == true)
-                {
-                    int mipmapLevel = 0;
-                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
-                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
-                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
-                    if (WM.MainWindow.IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
-                    sourceImage = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), AlphaFillColor);
-                }
-                else
-                {
-                    sourceImage = ImageAnalyzer.FillAlphaChannel(new Bitmap(GeneratePrinter.ImageSourcePath), AlphaFillColor);
-                }
-
+                Bitmap sImage = sourceImage;
+                sImage = CreateFilteredImage(sourceImage);
 
                 MemoryStream ms = new MemoryStream();
-                sourceImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                sImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
                 image.BeginInit();
                 ms.Seek(0, SeekOrigin.Begin);
                 image.StreamSource = ms;
                 image.EndInit();
 
-                sourceImage.Dispose();
+                sImage.Dispose();
                 //BitmapImage image = new BitmapImage();
                 //image.BeginInit();
                 //image.UriSource = new Uri(ImageSourcePath);
@@ -140,7 +169,6 @@ namespace TheBluePrinter
                 ImagePreview.Freeze();
                 
                 WM.MainWindow.UserImagePreview.Source = ImagePreview;
-                Log.New("Loaded Image " + ImageSourcePath);
                 WM.MainWindow.SourceImageReminderLabel.Visibility = System.Windows.Visibility.Hidden;
             }
             catch (Exception e)

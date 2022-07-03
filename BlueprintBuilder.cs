@@ -11,13 +11,17 @@ namespace TheBluePrinter
     /// </summary>
     public class BlueprintBuilder
     {
+        
+
+
+
 
         /// <summary>
         /// Takes the entities from BuildImageAssembler() and converts them to JSON text with all connections applied
         /// </summary>
         /// <param name="objects"></param>
         /// <returns></returns>
-        public static string BuildBlueprint(List<object> objects, int BeltTier = 2)
+        public static string BuildBlueprint(List<object> objects, int width = 0, int BeltTier = 2)
         {
             string beltType = "express-transport-belt";
             string underGroundType = "express-underground-belt";
@@ -103,7 +107,13 @@ namespace TheBluePrinter
                     allEntities.Add(new Blueprint.entity(splitterType, new Blueprint.entityComponent[] { S.position.AsBlueprintPosition, new Blueprint.direction(S.rotation), new Blueprint.input_priority(S.input_priority ? "left" : "right") }));
 
                 }
-                if(o.GetType() == typeof(PassiveProviderChest))
+                if (o.GetType() == typeof(OutputPrioritySplitter))
+                {
+                    OutputPrioritySplitter w = (OutputPrioritySplitter)o;
+                    allEntities.Add(new Blueprint.entity(splitterType, new Blueprint.entityComponent[] { w.position.AsBlueprintPosition, new Blueprint.direction(w.rotation), new Blueprint.output_priority(w.output_priority ? "left" : "right") }));
+
+                }
+                if (o.GetType() == typeof(PassiveProviderChest))
                 {
                     PassiveProviderChest P = (PassiveProviderChest)o;
                     allEntities.Add(new Blueprint.entity("logistic-chest-passive-provider", new Blueprint.entityComponent[] { P.position.AsBlueprintPosition }));
@@ -153,6 +163,12 @@ namespace TheBluePrinter
             string result = "{\"blueprint\": { \"icons\": [{\"signal\": { \"type\": \"item\",\"name\": \"express-transport-belt\"},\"index\": 1},{\"signal\": { \"type\": \"item\",\"name\": \"logistic-chest-requester\"},\"index\": 2}], \"entities\": [";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(result);
+            if (width > 0)
+            {
+                stringBuilder.Append(GetDriverString(width));
+                
+
+            }
             for (int i = 0; i < allEntities.Count; i++)
             {
                 Blueprint.entity e = allEntities[i];
@@ -192,12 +208,15 @@ namespace TheBluePrinter
             Substation lastHeaderSubstation = null;
             Inserter[] lastHeaderBufferInserters = new Inserter[2];
 
+            //for a last minute changes im going to use offset variables so I can push parts of the assembler out
+            float AssemblerOffset = 1f;
+            float MergeOffset = 3f;
             for (int y = 0; y < idMap.GetLength(0); y++)
             {
                 if (y % 2 == 0)
                 {
                     //Adds the first substation to each row in a fixed position
-                    Substation substation = new Substation(new pos(-3f, y * 5 - 2));
+                    Substation substation = new Substation(new pos(-3f + AssemblerOffset, y * 5 - 2));
 
                     if (lastRow[0] != null)
                     {
@@ -211,24 +230,39 @@ namespace TheBluePrinter
                     //Adds the cap to the front of every 2 rows combining them to 1 belt
                     //Also adds image buffer to the front
 
-                    entities.AddRange(new Belt[]
+                    
+
+                    entities.AddRange(new object[]
                     {
-                        new Belt(new pos(-3.5f, y * 5 + 2.5f), 4),
-                        new Belt(new pos(-2.5f, y * 5 + 2.5f), 6),
-                        new Belt(new pos(-1.5f, y * 5 + 2.5f), 6),
-                        new Belt(new pos(-0.5f, y * 5 + 2.5f), 6),
-
-                        new Belt(new pos(-3.5f, y * 5 + 3.5f), 6),
-                        new Belt(new pos(-2.5f, y * 5 + 3.5f), 4),
-                        new Belt(new pos(-1.5f, y * 5 + 3.5f), 6),
-                        new Belt(new pos(-0.5f, y * 5 + 3.5f), 6),
-
-                        new Belt(new pos(-3.5f, y * 5 + 4.5f), 0),
-                        new Belt(new pos(-2.5f, y * 5 + 4.5f), 6),
+                        new Belt(new pos(-3.5f + AssemblerOffset, y * 5 + 2.5f), 4),
+                        new Belt(new pos(-2.5f + AssemblerOffset, y * 5 + 2.5f), 6),
+                        new Belt(new pos(-1.5f + AssemblerOffset, y * 5 + 2.5f), 6),
+                        new Belt(new pos(-0.5f + AssemblerOffset, y * 5 + 2.5f), 6),
+                        new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 3.5f), 6),
+                        new Belt(new pos(-3.5f + AssemblerOffset, y * 5 + 3.5f), 6),
+                        new Belt(new pos(-2.5f + AssemblerOffset, y * 5 + 3.5f), 4),
+                        new Belt(new pos(-1.5f + AssemblerOffset, y * 5 + 3.5f), 6),
+                        new Belt(new pos(-0.5f + AssemblerOffset, y * 5 + 3.5f), 6),
+                        new Belt(new pos(-3.5f + AssemblerOffset, y * 5 + 4.5f), 0),
+                        new Belt(new pos(-2.5f + AssemblerOffset, y * 5 + 4.5f), 6),
+                        new UnderGround(new pos(-4.5f + AssemblerOffset, y * 5 + 1.5f), 0, false),
+                        new UnderGround(new pos(-4.5f + AssemblerOffset, y * 5 + 5.5f), 0, true)
+                        
                     });
+                    if (y < idMap.GetLength(0) - 2)
+                    {
+                        entities.AddRange(new object[]
+                        {
+                            new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 6.5f), 0),
+                            new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 7.5f), 0),
+                            new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 8.5f), 0),
+                            new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 9.5f), 0),
+                            new Belt(new pos(-4.5f + AssemblerOffset, y * 5 + 10.5f), 0)
+                        });
+                    }
 
-                    Inserter bufferTop = new Inserter(new pos(-1.5f, y * 5 + 1.5f), 0);
-                    Inserter bufferBottom = new Inserter(new pos(-1.5f, y * 5 + 4.5f), 4);
+                        Inserter bufferTop = new Inserter(new pos(-4.5f + AssemblerOffset, y * 5 + 2.5f), 0);
+                    Inserter bufferBottom = new Inserter(new pos(-4.5f + AssemblerOffset, y * 5 + 4.5f), 4);
 
                     substation.connections.Add(bufferTop);
                     substation.connections.Add(bufferBottom);
@@ -243,6 +277,8 @@ namespace TheBluePrinter
                     lastHeaderSubstation = substation;
                     lastHeaderBufferInserters[0] = bufferTop;
                     lastHeaderBufferInserters[1] = bufferBottom;
+
+                    
                 }
                 else
                 {
@@ -257,7 +293,7 @@ namespace TheBluePrinter
                     if (x % 18 == 0 && placeRoboPorts)      //every 18 positions, place a substation and a roboport to the left of it
                     {
 
-                        Substation station = new Substation(new pos(x + 9f, y * 5 - 2));
+                        Substation station = new Substation(new pos(x + 9f + AssemblerOffset, y * 5 - 2));
                         if (lastRow[(x / 18) + 1] != null)
                         {
                             station.neighbors.Add(lastRow[(x / 18) + 1]);
@@ -267,12 +303,12 @@ namespace TheBluePrinter
                         lastSubstation = station;
 
                         entities.Add(station);
-                        entities.Add(new roboport(new pos(x, y * 5 - 2)));
+                        entities.Add(new roboport(new pos(x + AssemblerOffset, y * 5 - 2)));
                     }
                     if (top)
                     {
-                        entities.Add(new RequesterChest(new pos(x + 0.5f, y * 5 + 0.5f), Item.AllItems[idMap[y, x]].Name));
-                        Inserter inserter = new Inserter(new pos(x + 0.5f, y * 5 + 1.5f), 0);
+                        entities.Add(new RequesterChest(new pos(x + AssemblerOffset + 0.5f, y * 5 + 0.5f), Item.AllItems[idMap[y, x]].Name));
+                        Inserter inserter = new Inserter(new pos(x + AssemblerOffset + 0.5f, y * 5 + 1.5f), 0);
                         if (lastInserter != null)
                         {
                             inserter.connections.Add(lastInserter);
@@ -283,13 +319,13 @@ namespace TheBluePrinter
                         }
                         lastInserter = inserter;
                         entities.Add(inserter);
-                        entities.Add(new Belt(new pos(x + 0.5f, y * 5 + 2.5f), 6));
+                        entities.Add(new Belt(new pos(x + AssemblerOffset + 0.5f, y * 5 + 2.5f), 6));
 
                     }
                     else
                     {
-                        entities.Add(new RequesterChest(new pos(x + 0.5f, y * 5 + 0.5f), Item.AllItems[idMap[y, x]].Name));
-                        Inserter inserter = new Inserter(new pos(x + 0.5f, y * 5 - 0.5f), 4);
+                        entities.Add(new RequesterChest(new pos(x + AssemblerOffset + 0.5f, y * 5 + 0.5f), Item.AllItems[idMap[y, x]].Name));
+                        Inserter inserter = new Inserter(new pos(x + AssemblerOffset + 0.5f, y * 5 - 0.5f), 4);
                         if (lastInserter != null)
                         {
                             inserter.connections.Add(lastInserter);
@@ -300,7 +336,7 @@ namespace TheBluePrinter
                         }
                         lastInserter = inserter;
                         entities.Add(inserter);
-                        entities.Add(new Belt(new pos(x + 0.5f, y * 5 - 1.5f), 6));
+                        entities.Add(new Belt(new pos(x + AssemblerOffset + 0.5f, y * 5 - 1.5f), 6));
                     }
                 }
                 lastSubstation = null;
@@ -324,7 +360,7 @@ namespace TheBluePrinter
                 }
             }
 
-            //build gate
+            //build gate and cache
             float cacheY = 3.5f + belts * 10 - 7;
             int cacheLength = (int)Math.Ceiling(idMap.GetLength(1) * 2 / 4f);
             Belt[] gates = new Belt[belts];
@@ -343,9 +379,85 @@ namespace TheBluePrinter
             }
             entities.AddRange(gates);
 
+            //Build front buffer passthrough
+            int undergroundBeltPlacementCounter = 0;
+            float FBy = cacheY + cacheLength + 1f;
+            float FBx = -4.5f;
+            entities.Add(new UnderGround(new pos(FBx + 1f, FBy + 1f), 2, false));
+            entities.Add(new Belt(new pos(FBx + 2f, FBy + 1f), 0));
+            entities.Add(new Belt(new pos(FBx + 2f, FBy), 6));
+            entities.Add(new Belt(new pos(FBx + 1f, FBy), 0));
+            entities.Add(new Belt(new pos(FBx + 1f, FBy - 1f), 0));
+
+            for (int k = 0; k < cacheLength; k++)
+            {
+                entities.Add(new Belt(new pos(FBx + 1f, FBy - 2f - k), 0));
+
+            }
+
+            for (int h = 0; h < belts; h++)
+            {
+                if (undergroundBeltPlacementCounter == 8)   //every 8 belts place an underground
+                {
+                    entities.AddRange(new object[]
+                    {
+                       new UnderGround(new pos(FBx - h, FBy), 4, true),
+                       new UnderGround(new pos(FBx - h, FBy + 1f), 2, true),
+                       new UnderGround(new pos(FBx - h, FBy + 2f), 4, false)
+
+                    });
+                    undergroundBeltPlacementCounter++;
+                }
+                else if (undergroundBeltPlacementCounter == 9)
+                {
+                    undergroundBeltPlacementCounter = 0;
+                    entities.AddRange(new object[]
+                    {
+                       new UnderGround(new pos(FBx - h, FBy), 4, true),
+                       new UnderGround(new pos(FBx - h, FBy + 1f), 2, false),
+                       new UnderGround(new pos(FBx - h, FBy + 2f), 4, false)
+
+                    });
+                }
+                else
+                {
+                    entities.AddRange(new object[]
+                    {
+                        
+                        new Belt(new pos(FBx - h, FBy),4),
+                        new Belt(new pos(FBx - h, FBy + 1f),4),
+                        new Belt(new pos(FBx - h, FBy + 2f),4),
+                    });
+                    undergroundBeltPlacementCounter++;
+                }
+            }
+
+            if (undergroundBeltPlacementCounter == 9)
+            {
+                entities.Add(new Belt(new pos(FBx - belts, FBy + 1f), 2));
+            }
+            else
+            {
+                entities.Add(new UnderGround(new pos(FBx - belts, FBy + 1f), 2, true));
+            }
+
+            //add spliter and padding before the merge to feed the buffer
+            entities.Add(new Belt(new pos(FBx - belts - 1f, FBy + 1f), 2));
+            entities.Add(new OutputPrioritySplitter(new pos(FBx - belts - 1.5f, FBy), 4, false));
+            entities.Add(new Belt(new pos(FBx - belts - 2f, FBy + 1f), 4));
+            entities.Add(new Belt(new pos(FBx - belts - 2f, FBy + 2f), 4));
+
+            for (int c = 1; c < belts; c++) //add padding before the merge starting at 1 to skip the first one we already did
+            {
+                entities.Add(new Belt(new pos(FBx - belts - 2f - c, FBy     ), 4));
+                entities.Add(new Belt(new pos(FBx - belts - 2f - c, FBy + 1f), 4));
+                entities.Add(new Belt(new pos(FBx - belts - 2f - c, FBy + 2f), 4));
+            }
+
+
             //build merge
             float mergeX = -3.5f - belts;
-            float mergeY = cacheY + cacheLength + 1f;
+            float mergeY = cacheY + cacheLength + 1f + MergeOffset;
             int groups = (int)Math.Floor(belts / 4f);
             Log.New("groups:" + groups.ToString());
 
@@ -392,6 +504,7 @@ namespace TheBluePrinter
                     entities.Add(new Belt(new pos(MAssemblyX + 2f, MAssemblyY + 1f), 6));
                     entities.Add(new Belt(new pos(MAssemblyX + 3f, MAssemblyY + 1f), 6));
                     entities.Add(new Belt(new pos(MAssemblyX + 4f, MAssemblyY + 1f), 6));
+                    
 
                     //connect merge and 4x turn
                     for (int v = 0; v < belts - 3; v++)
@@ -685,6 +798,26 @@ namespace TheBluePrinter
 
         }
 
+        public class OutputPrioritySplitter
+        {
+            public pos position;
+            public int rotation;
+            public bool output_priority;
+
+            public OutputPrioritySplitter(pos position, int rotation)
+            {
+                this.position = position;
+                this.rotation = rotation;
+            }
+            public OutputPrioritySplitter(pos position, int rotation, bool TFLeftOrRight)
+            {
+                this.position = position;
+                this.rotation = rotation;
+                this.output_priority = TFLeftOrRight;
+            }
+
+        }
+
         public class Belt
         {
             public pos position;
@@ -762,8 +895,76 @@ namespace TheBluePrinter
                 this.position = position;
             }
         }
+        
+        public static string GetDriverString(int width)
+        {
+            int Xmodifier = 320;
+            int Ymodifier = -150 + ((width/2) * 10);
+            object[] printerDriverComponents = new object[]
+            {
+                "{\"entity_number\":1,\"name\":\"constant-combinator\",\"position\":{\"x\":",
+                -317.5 + Xmodifier,
+                ",\"y\":",
+                155.5 + Ymodifier,
+                "},\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"count\":",
+                width.ToString(),
+                ",\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":1}]}}},{\"entity_number\":2,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":",
+                -315 + Xmodifier,
+                ",\"y\":",
+                155.5 + Ymodifier,
+                "},\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":40,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":1},{\"entity_id\":8,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":3,\"circuit_id\":1}]}}},{\"entity_number\":3,\"name\":\"decider-combinator\",\"position\":{\"x\":",
+                -313 + Xmodifier,
+                ",\"y\":",
+                155.5 + Ymodifier,
+                "},\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"copy_count_from_input\":true}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":2},{\"entity_id\":4,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":4,\"circuit_id\":1},{\"entity_id\":10,\"circuit_id\":1}]}}},{\"entity_number\":4,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                -313 + Xmodifier,
+                " ,\"y\":",
+                154.5 + Ymodifier,
+                " },\"direction\":6,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_constant\":1,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":3,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":3,\"circuit_id\":1}]}}},{\"entity_number\":5,\"name\":\"constant-combinator\",\"position\":{\"x\":", 
+                -317.5 + Xmodifier,
+                " ,\"y\":",
+                156.5 + Ymodifier,
+                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-B\"},\"count\":3,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":11}]}}},{\"entity_number\":6,\"name\":\"constant-combinator\",\"position\":{\"x\":", 
+                -317.5 + Xmodifier,
+                " ,\"y\":",
+                157.5 + Ymodifier,
+                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-S\"},\"count\":2,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":11}]}}},{\"entity_number\":7,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                -315 + Xmodifier,
+                " ,\"y\":",
+                157.5 + Ymodifier,
+                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":10,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":8,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":9,\"circuit_id\":1}]}}},{\"entity_number\":8,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                -315 + Xmodifier,
+                " ,\"y\":",
+                156.5 + Ymodifier,
+                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":3,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":7,\"circuit_id\":1}]}}},{\"entity_number\":9,\"name\":\"decider-combinator\",\"position\":{\"x\":", 
+                -313 + Xmodifier,
+                " ,\"y\":",
+                157.5 + Ymodifier,
+                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-D\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":7,\"circuit_id\":2},{\"entity_id\":10,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":10,\"circuit_id\":2},{\"entity_id\":11}]}}},{\"entity_number\":10,\"name\":\"decider-combinator\",\"position\":{\"x\":", 
+                -313 + Xmodifier,
+                " ,\"y\":",
+                156.5 + Ymodifier,
+                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"constant\":15,\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-A\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":3,\"circuit_id\":2},{\"entity_id\":9,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":9,\"circuit_id\":2}]}}},{\"entity_number\":11,\"name\":\"substation\",\"position\":{\"x\":", 
+                -311 + Xmodifier,
+                " ,\"y\":",
+                157 + Ymodifier,
+                " },\"connections\":{\"1\":{\"red\":[{\"entity_id\":6},{\"entity_id\":9,\"circuit_id\":2},{\"entity_id\":5}]}}},"
+            };
 
-
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < printerDriverComponents.Length; i++)
+            {
+                if(printerDriverComponents[i] != null)
+                {
+                    
+                    sb.Append(printerDriverComponents[i].ToString());
+                    
+                }
+            }
+            
+            
+            return sb.ToString();
+        }
     }
 
     /// <summary>
@@ -789,7 +990,7 @@ namespace TheBluePrinter
         /// </summary>
         public class entity
         {
-            public static int lastEntityNumber = 0;
+            public static int lastEntityNumber = 11;  //start with 11 so I can insert all the combinators and logic before without having to define it here
 
             public string name;
             public int entity_number;
@@ -1040,6 +1241,21 @@ namespace TheBluePrinter
             }
         }
 
+        public class output_priority : entityComponent
+        {
+            string leftOrRight;
+            public output_priority(string leftOrRight)
+            {
+                this.leftOrRight = leftOrRight;
+                componentName = "output_priority";
+            }
+
+            public override string getJson()
+            {
+                return "\"" + componentName + "\": \"" + leftOrRight + "\"";
+            }
+        }
+
         /// <summary>
         /// preset control behavior for belts to act as the gate
         /// </summary>
@@ -1068,6 +1284,59 @@ namespace TheBluePrinter
             public override string getJson()
             {
                 return "\"" + componentName + "\": \"" + (TFInputOrOutput ? "input" : "output") + "\"";
+            }
+        }
+
+        public class control_behavior2 : entityComponent
+        {
+            public override string getJson()
+            {
+                return "\"control_behavior\": {\"arithmetic_conditions\": {\"first_signal\": {\"type\": \"virtual\",\"name\": \"signal-each\"},\"second_constant\": 40,\"operation\": \"*\",\"output_signal\": {\"type\": \"virtual\",\"name\": \"signal-each\"}}}";
+            }
+        }
+
+        public class control_behavior3 : entityComponent
+        {
+            public override string getJson()
+            {
+                return "\"control_behavior\": {\"decider_conditions\": {\"first_signal\": {\"type\": \"virtual\",\"name\": \"signal-T\"},\"second_signal\": {\"type\": \"virtual\",\"name\": \"signal-dot\"},\"comparator\": \"\\u003C\",\"output_signal\": {\"type\": \"virtual\",\"name\": \"signal-T\"},\"copy_count_from_input\": true}}";
+            }
+        }
+
+        public class Combinatorconnections : entityComponent
+        {
+            public List<int> entity_numbers1 = new List<int>();
+            public List<int> entity_numbers2 = new List<int>();
+            public Combinatorconnections(int[] circut1_numbers, int[] circut2_numbers)
+            {
+                this.entity_numbers1.AddRange(entity_numbers1);
+                this.entity_numbers2.AddRange(entity_numbers2);
+            }
+
+            public void AddConnection(int entity_number, int circut)
+            {
+                if (circut == 1)
+                    entity_numbers1.Add(entity_number);
+                if (circut == 2)
+                    entity_numbers2.Add(entity_number);
+            }
+
+            public override string getJson()
+            {
+                string header = "\"connections\": { \"1\": {\"red\": [";
+                string body = "";
+                for (int i = 0; i < entity_numbers1.Count; i++)
+                {
+                    int ID = entity_numbers1[i];
+                    body += "{\"entity_id\": " + ID + "}";
+
+                    if (i < entity_numbers1.Count - 1)
+                    {
+                        body += ",";
+                    }
+                }
+                string footer = "]}}";
+                return header + body + footer;
             }
         }
     }

@@ -140,6 +140,10 @@ namespace TheBluePrinter
             MainWindow.PreviewTicks2.Foreground = Secondary;
             MainWindow.PreviewTicks3.Foreground = Secondary;
             MainWindow.PreviewTicks4.Foreground = Secondary;
+            MainWindow.ResizeImageCheckbox.Foreground = Primary;
+            MainWindow.RICGLabelX.Foreground = Primary;
+            MainWindow.RICGLabelY.Foreground = Primary;
+            MainWindow.RICGApply.Foreground = Primary;
 
 
 

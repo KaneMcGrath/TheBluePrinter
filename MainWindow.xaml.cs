@@ -25,13 +25,26 @@ namespace TheBluePrinter
             InitializeComponent();
             ResourceLoader.LoadDefaultItems();
             ItemSelector.LoadItems();
-
+            IconSourceResolutionSlider.Visibility = Visibility.Collapsed;
+            IconSourceResolutionSliderTickGrid.Visibility = Visibility.Collapsed;
             SettingsColumnWidth.Width = new GridLength(0);
             SettingsMenuStackPanel.Visibility = Visibility.Hidden;
+            ResizeImageControlGrid.Visibility = Visibility.Collapsed;
+            RICGApplyGrid.Visibility = Visibility.Collapsed;
             WM.SettingsMenuOpen = false;
+            
             Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
             Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
             WM.UpdateColors();
+            
+
+            //Dev Init Here
+            FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
+            ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest\\data\\base\\graphics\\icons\\fish.png";
+            FormatFactorioIconCheckbox.IsChecked = true;
+            IconSourceResolutionSlider.Value = 32;
+            IconSourceResolutionSlider.Visibility = Visibility.Visible;
+            IconSourceResolutionSliderTickGrid.Visibility = Visibility.Visible;
         }
 
         private void OnClickImageSourcePath(object sender, RoutedEventArgs e)
@@ -316,16 +329,9 @@ namespace TheBluePrinter
             if (IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
             if (IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
 
-            Bitmap image;
-            if (FormatFactorioIconCheckbox.IsChecked == true)
-            {
-                image = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), GeneratePrinter.AlphaFillColor);
-            }
-            else
-            {
-                ImageAnalyzer.FillAlphaChannel(image = new Bitmap(GeneratePrinter.ImageSourcePath), GeneratePrinter.AlphaFillColor);
-            }
-            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), 2));
+            Bitmap image = GeneratePrinter.CreateFilteredImage(GeneratePrinter.sourceImage);
+            
+            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), image.Width));
             Log.New("Generated Printer", CC.green);
             image.Dispose();
         }
@@ -358,11 +364,11 @@ namespace TheBluePrinter
                 Log.New("Please choose an image under \"Image Source Path\"", CC.red);
                 return;
             }
-            int mipmapLevel = 0;
-            if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
-            if (IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
-            if (IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
-            if (IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
+           // int mipmapLevel = 0;
+           // if (IconSourceResolutionSlider.Value == 64) mipmapLevel = 0;
+           // if (IconSourceResolutionSlider.Value == 32) mipmapLevel = 1;
+           // if (IconSourceResolutionSlider.Value == 16) mipmapLevel = 2;
+           // if (IconSourceResolutionSlider.Value == 8) mipmapLevel = 3;
             int previewMipmapLevel = 0;
             if (IconResolutionSlider.Value == 64) previewMipmapLevel = 0;
             if (IconResolutionSlider.Value == 32) previewMipmapLevel = 1;
@@ -370,17 +376,17 @@ namespace TheBluePrinter
             if (IconResolutionSlider.Value == 8) previewMipmapLevel = 3;
             try
             {
-                Bitmap sourceImage;
-                if (FormatFactorioIconCheckbox.IsChecked == true)
-                {
-                    sourceImage = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), GeneratePrinter.AlphaFillColor);
-                }
-                else
-                {
-                    sourceImage = ImageAnalyzer.FillAlphaChannel(new Bitmap(GeneratePrinter.ImageSourcePath), GeneratePrinter.AlphaFillColor);
-                }
+                //Bitmap sourceImage;
+                //if (FormatFactorioIconCheckbox.IsChecked == true)
+                //{
+                //    sourceImage = ImageAnalyzer.FillAlphaChannel(ImageAnalyzer.FormatFactorioIconImage(new Bitmap(GeneratePrinter.ImageSourcePath), mipmapLevel), GeneratePrinter.AlphaFillColor);
+                //}
+                //else
+                //{
+                //    sourceImage = ImageAnalyzer.FillAlphaChannel(new Bitmap(GeneratePrinter.ImageSourcePath), GeneratePrinter.AlphaFillColor);
+                //}
 
-                Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(sourceImage, false, previewMipmapLevel);
+                Bitmap bitImage = ImageAnalyzer.CreatePreviewImage(GeneratePrinter.CreateFilteredImage(GeneratePrinter.sourceImage), false, previewMipmapLevel);
                 if (bitImage == null) return;
                 MemoryStream ms = new MemoryStream();
                 bitImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
@@ -391,7 +397,7 @@ namespace TheBluePrinter
                 image.EndInit();
                 PreviewGeneratedImage.Source = image;
                 PreviewImageReminderLabel.Visibility = Visibility.Hidden;
-                sourceImage.Dispose();
+                bitImage.Dispose();
             }
             catch (Exception ex)
             {
@@ -569,6 +575,26 @@ namespace TheBluePrinter
                 BackGroundColorPreviewRectangle.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
             }
             GeneratePrinter.UpdateImageSourcePath(true);
+        }
+
+        private void ApplyImageSizeOnClick(object sender, RoutedEventArgs e)
+        {
+            GeneratePrinter.LoadImagePreview();
+        }
+
+        private void ResizeImageCheckboxOnClick(object sender, RoutedEventArgs e)
+        {
+            if (ResizeImageCheckbox.IsChecked == true)
+            {
+                ResizeImageControlGrid.Visibility = Visibility.Visible;
+                RICGApplyGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ResizeImageControlGrid.Visibility=Visibility.Collapsed;
+                RICGApplyGrid.Visibility=Visibility.Collapsed;
+            }
+            GeneratePrinter.LoadImagePreview();
         }
     }
 }

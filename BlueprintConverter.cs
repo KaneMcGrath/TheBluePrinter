@@ -146,6 +146,7 @@ namespace TheBluePrinter
         /// </summary>
         static string FormatJsonText(string jsonString)
         {
+            
             try
             {
                 var doc = JsonDocument.Parse(
@@ -213,7 +214,6 @@ namespace TheBluePrinter
         
         /// <summary>
         /// Why did this take 2 days to get working?
-        /// Streams suck fat dick
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>

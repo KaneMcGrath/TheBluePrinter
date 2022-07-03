@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TheBluePrinter"
         mc:Ignorable="d"
-        Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="450" MinHeight="420" Initialized="MainWindowInit" Closing="OnClosing" KeyDown="Key_Down" KeyUp="Key_Up">
+        Title="The Blue Printer" Height="600" Width="850" Background="#FF3D659B" MinWidth="450" MinHeight="420" Initialized="MainWindowInit" Closing="OnClosing" KeyDown="Key_Down" KeyUp="Key_Up" Icon="/IconRendered512.png">
     
     <Grid>
         <Grid.ColumnDefinitions>
@@ -76,7 +76,7 @@
                                         <ColumnDefinition Width="4*"/>
                                         <ColumnDefinition Width="8*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label x:Name="PreviewTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <Label x:Name="PreviewTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                     <Label x:Name="PreviewTicks2" Grid.Column="1" Content="16" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     <Label x:Name="PreviewTicks3" Grid.Column="2" Content="32" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     <Label x:Name="PreviewTicks4" Grid.Column="3" Content="64" FontWeight="Bold" FontSize="12" Foreground="#FFD9D3BF" VerticalAlignment="Center" HorizontalAlignment="Right"/>
@@ -100,6 +100,20 @@
                     </Grid>
                     <ScrollViewer x:Name="MainWindow13FGP" Grid.Column="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="8,4,8,4" Background="Transparent">
+                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images." Margin="-4,0,0,0"/>
+                            <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
+                            
+
+                            
+                            <Grid Margin="0,0,0,10" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Button x:Name="Reload" Height="30"  HorizontalAlignment="Stretch" Content="Reload" Foreground="#FF3D659B" Click="OnClickReloadFactorioSource" Grid.Column="0" Margin="0,0,0,0"/>
+                                <Button x:Name="MainWindow21FGP" Height="30"  HorizontalAlignment="Stretch" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Grid.Column="1" Margin="0,0,0,0"/>
+                            </Grid>
                             
                             <Label x:Name="MainWindow15FGP" Height="30" Content="Image Source Path" Foreground="#FF3D659B" ToolTip="The path to the image you want to be converted.  Supports PNG, JPG, EXIF, GIF, BMP and TIFF."/>
                             <TextBox x:Name="ImageSourcePathTextBox" Height="30"  Text="" TextChanged="ImageSourcePathTextChanged"/>
@@ -114,24 +128,48 @@
                             </Grid>
 
 
-                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick" ToolTip="If you choose a image from the factorio (data\base\graphics\icons) folder, this will format the image to a selected mipmap level" HorizontalAlignment="Stretch"/>
-                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Collapsed" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
+                            <CheckBox x:Name="FormatFactorioIconCheckbox" Content="Format Factorio Icon" Foreground="#FF3D659B" Height="30" Click="FormatFactorioIconCheckboxOnClick" ToolTip="If you choose a image from the factorio (data\base\graphics\icons) folder, this will format the image to a selected mipmap level" HorizontalAlignment="Stretch" Margin="0,5,0,0"/>
+                            <Slider x:Name="IconSourceResolutionSlider" Visibility="Visible" Margin="8,0,8,0" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" Value="64" Minimum="8" Maximum="64" Ticks="8,16,32,64" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Foreground="#FF3D659B" Background="Transparent" Height="30" ValueChanged="IconSourceResolutionSliderValueChanged" />
 
-                            <Grid x:Name="IconSourceResolutionSliderTickGrid" Margin="8,0,8,0" Visibility="Collapsed">
+                            <Grid x:Name="IconSourceResolutionSliderTickGrid" Margin="8,0,8,0" Visibility="Visible">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="18"/>
                                     <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition Width="4*"/>
                                     <ColumnDefinition Width="8*"/>
                                 </Grid.ColumnDefinitions>
-                                <Label x:Name="ICOTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <Label x:Name="ICOTicks1" Grid.Column="0" Content="8"  FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                 <Label x:Name="ICOTicks2" Grid.Column="1" Content="16" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 <Label x:Name="ICOTicks3" Grid.Column="2" Content="32" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 <Label x:Name="ICOTicks4" Grid.Column="3" Content="64" FontWeight="Bold" FontSize="12" Foreground="#FF3D659B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             
                                 
                             </Grid>        
-                            <Grid Margin="0,10,0,0">
+                            <CheckBox x:Name="ResizeImageCheckbox" Content="Resize image" Foreground="#FF3D659B" Margin="0,10,0,0" Click="ResizeImageCheckboxOnClick" ToolTip="Resize the image to a specified width and height.  If your image is larger than 64x64, it is highly recommended that you use this"/>
+                            
+                            <Grid x:Name="ResizeImageControlGrid" Visibility="Visible">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    
+                                </Grid.ColumnDefinitions>
+
+                                <Label x:Name="RICGLabelX" Content="Width:" HorizontalAlignment="Right" FontSize="14" Foreground="#FF3D659B"/>
+                                <TextBox x:Name="RICGTextBoxX"  Grid.Column="1" Text="16"/>
+                                <Label x:Name="RICGLabelY" Content="Height:" Grid.Column="2" FontSize="14" HorizontalAlignment="Right" Foreground="#FF3D659B"/>
+                                <TextBox x:Name="RICGTextBoxY" Grid.Column="3" Text="16"/>
+                            </Grid>
+                            <Grid x:Name="RICGApplyGrid" Visibility="Visible">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="RICGApply" Grid.Column="1" Height="30" Content="Apply" Visibility="Visible" Click="ApplyImageSizeOnClick" Foreground="#FF3D659B"/>
+                            </Grid>
+                            <Grid Margin="0,20,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
@@ -139,20 +177,6 @@
 
                                 <Button x:Name="BackgroundColor" Height="30"  HorizontalAlignment="Stretch" Content="Set Alpha Color" ToolTip="If your image has any transparency this color will replace it" Foreground="#FF3D659B" Click="SetBackgroundColorOnClick" Grid.Column="0" Margin="0,0,0,0"/>
                                 <Rectangle Grid.Column="1" x:Name="BackGroundColorPreviewRectangle" Fill="Black"/>
-                            </Grid>
-                            <Label x:Name="MainWindow20FGP" Height="30" Content="Factorio Path" Foreground="#FF3D659B" ToolTip="The path to your factorio game folder.  This is only used for finding icon files to make preview images." Margin="-4,20,0,0"/>
-                            <TextBox x:Name="FactorioPathTextBox" Height="30"  Text="" BorderThickness="1" TextChanged="FactorioPathTextChanged"/>
-                            
-
-                            
-                            <Grid Margin="0,0,0,30" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <Button x:Name="Reload" Height="30"  HorizontalAlignment="Stretch" Content="Reload" Foreground="#FF3D659B" Click="OnClickReloadFactorioSource" Grid.Column="0" Margin="0,0,0,0"/>
-                                <Button x:Name="MainWindow21FGP" Height="30"  HorizontalAlignment="Stretch" Content="Browse..." Foreground="#FF3D659B" Click="OnClickFactorioSourcePath" Grid.Column="1" Margin="0,0,0,0"/>
                             </Grid>
                         </StackPanel>
                     </ScrollViewer>
