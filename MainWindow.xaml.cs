@@ -33,8 +33,8 @@ namespace TheBluePrinter
             RICGApplyGrid.Visibility = Visibility.Collapsed;
             WM.SettingsMenuOpen = false;
             
-            Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
-            Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
+            //Settings.PrimaryColor = TestingHelper.HextoColor("433b45");
+            //Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
             WM.UpdateColors();
             
 
@@ -331,7 +331,7 @@ namespace TheBluePrinter
 
             Bitmap image = GeneratePrinter.CreateFilteredImage(GeneratePrinter.sourceImage);
             
-            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), image.Width));
+            ResultTextBox.Text = BlueprintConverter.ConvertToBlueprint(BlueprintBuilder.BuildBlueprint(BlueprintBuilder.BuildImageAssembler(ImageAnalyzer.CreateItemImage(image)), image.Width, image.Height));
             Log.New("Generated Printer", CC.green);
             image.Dispose();
         }

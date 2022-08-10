@@ -7,21 +7,17 @@ using System.Text;
 namespace TheBluePrinter
 {
     /// <summary>
-    /// Warning! this code and almost all of the following code is very filthy
+    /// Warning! this code and almost all of the following code is very filthy, but it somehow works.
     /// </summary>
     public class BlueprintBuilder
     {
         
-
-
-
-
         /// <summary>
         /// Takes the entities from BuildImageAssembler() and converts them to JSON text with all connections applied
         /// </summary>
         /// <param name="objects"></param>
         /// <returns></returns>
-        public static string BuildBlueprint(List<object> objects, int width = 0, int BeltTier = 2)
+        public static string BuildBlueprint(List<object> objects, int width = 0, int height = 0, int BeltTier = 2)
         {
             string beltType = "express-transport-belt";
             string underGroundType = "express-underground-belt";
@@ -86,6 +82,7 @@ namespace TheBluePrinter
                     neighborLookup.Add(s, SubstationEntity);
                     connectionLookup.Add(s, SubstationEntity);
                 }
+                
                 if (o.GetType() == typeof(roboport))
                 {
                     roboport r = (roboport)o;
@@ -105,7 +102,6 @@ namespace TheBluePrinter
                 {
                     Splitter S = (Splitter)o;
                     allEntities.Add(new Blueprint.entity(splitterType, new Blueprint.entityComponent[] { S.position.AsBlueprintPosition, new Blueprint.direction(S.rotation), new Blueprint.input_priority(S.input_priority ? "left" : "right") }));
-
                 }
                 if (o.GetType() == typeof(OutputPrioritySplitter))
                 {
@@ -149,23 +145,38 @@ namespace TheBluePrinter
                     }
                     neighborLookup[s].components.Add(new Blueprint.neighbors(neighbors));
                 }
+
                 if (s.connections.Count > 0)
                 {
-                    int[] connections = new int[s.connections.Count];
-                    for (int i = 0; i < s.connections.Count; i++)
+                    if (s.isDriverHeader)
                     {
-                        connections[i] = connectionLookup[s.connections[i]].GetEntityNumber();
+                        int[] connections = new int[s.connections.Count + 1];
+                        for (int i = 0; i < s.connections.Count; i++)
+                        {
+                            connections[i] = connectionLookup[s.connections[i]].GetEntityNumber();
+                        }
+                        connections[s.connections.Count] = 11;
+                        connectionLookup[s].components.Add(new Blueprint.connections(connections));
                     }
-                    connectionLookup[s].components.Add(new Blueprint.connections(connections));
+                    else 
+                    { 
+                        int[] connections = new int[s.connections.Count];
+                        for (int i = 0; i < s.connections.Count; i++)
+                        {
+                            connections[i] = connectionLookup[s.connections[i]].GetEntityNumber();
+                        }
+                        connectionLookup[s].components.Add(new Blueprint.connections(connections));
+                    }
                 }
             }
+
 
             string result = "{\"blueprint\": { \"icons\": [{\"signal\": { \"type\": \"item\",\"name\": \"express-transport-belt\"},\"index\": 1},{\"signal\": { \"type\": \"item\",\"name\": \"logistic-chest-requester\"},\"index\": 2}], \"entities\": [";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(result);
             if (width > 0)
             {
-                stringBuilder.Append(GetDriverString(width));
+                stringBuilder.Append(GetDriverString(width, height));
                 
 
             }
@@ -192,11 +203,10 @@ namespace TheBluePrinter
         /// <returns></returns>
         public static List<object> BuildImageAssembler(int[,] idMap)
         {
-           
             List<object> entities = new List<object>();                         //Final List of entities
             bool top = true;                                                    //whether the current row will be placed on top, with the inserters facing down
             bool placeRoboPorts = true;                                         //place roboports every other row, i probably could have used top for this
-
+                                                                                
             // stores all substations in the last row so the substations in the next row can connect to them
             int substationRows = (int)Math.Ceiling((double)idMap.GetLength(1) / 18.0) + 1;
             Substation[] lastRow = new Substation[substationRows];
@@ -208,6 +218,12 @@ namespace TheBluePrinter
             Substation lastHeaderSubstation = null;
             Inserter[] lastHeaderBufferInserters = new Inserter[2];
 
+            // stores the last header substation to be connected to the driver later
+            Substation keySubstation = null;
+
+            //store all of the substations in this list so we can arbitrarily connect to them later
+            List<Substation> allSubstations = new List<Substation>();
+
             //for a last minute changes im going to use offset variables so I can push parts of the assembler out
             float AssemblerOffset = 1f;
             float MergeOffset = 3f;
@@ -217,14 +233,14 @@ namespace TheBluePrinter
                 {
                     //Adds the first substation to each row in a fixed position
                     Substation substation = new Substation(new pos(-3f + AssemblerOffset, y * 5 - 2));
-
+                    
                     if (lastRow[0] != null)
                     {
                         substation.neighbors.Add(lastRow[0]);
                     }
                     lastRow[0] = substation;
                     lastSubstation = substation;
-                    entities.Add(substation);
+                    allSubstations.Add(substation);
                     placeRoboPorts = true;
 
                     //Adds the cap to the front of every 2 rows combining them to 1 belt
@@ -261,7 +277,7 @@ namespace TheBluePrinter
                         });
                     }
 
-                        Inserter bufferTop = new Inserter(new pos(-4.5f + AssemblerOffset, y * 5 + 2.5f), 0);
+                    Inserter bufferTop = new Inserter(new pos(-4.5f + AssemblerOffset, y * 5 + 2.5f), 0);
                     Inserter bufferBottom = new Inserter(new pos(-4.5f + AssemblerOffset, y * 5 + 4.5f), 4);
 
                     substation.connections.Add(bufferTop);
@@ -292,7 +308,6 @@ namespace TheBluePrinter
                 {
                     if (x % 18 == 0 && placeRoboPorts)      //every 18 positions, place a substation and a roboport to the left of it
                     {
-
                         Substation station = new Substation(new pos(x + 9f + AssemblerOffset, y * 5 - 2));
                         if (lastRow[(x / 18) + 1] != null)
                         {
@@ -302,7 +317,7 @@ namespace TheBluePrinter
                         station.neighbors.Add(lastSubstation);
                         lastSubstation = station;
 
-                        entities.Add(station);
+                        allSubstations.Add(station);
                         entities.Add(new roboport(new pos(x + AssemblerOffset, y * 5 - 2)));
                     }
                     if (top)
@@ -320,7 +335,6 @@ namespace TheBluePrinter
                         lastInserter = inserter;
                         entities.Add(inserter);
                         entities.Add(new Belt(new pos(x + AssemblerOffset + 0.5f, y * 5 + 2.5f), 6));
-
                     }
                     else
                     {
@@ -364,6 +378,11 @@ namespace TheBluePrinter
             float cacheY = 3.5f + belts * 10 - 7;
             int cacheLength = (int)Math.Ceiling(idMap.GetLength(1) * 2 / 4f);
             Belt[] gates = new Belt[belts];
+
+                //connects the gate to a substation right below it
+            float gateY = cacheY + cacheLength - 1;
+            Substation gateConnectionHeader = new Substation(new pos(-2, gateY)); 
+
             for (int q = 0; q < belts; q++)
             {
                 for (int v = 0; v < cacheLength; v++)
@@ -376,9 +395,70 @@ namespace TheBluePrinter
                 {
                     gates[q].connections.Add(gates[q - 1]);
                 }
+                if (q == 0)
+                {
+                    gates[q].connections.Add(gateConnectionHeader);
+                }
             }
-            entities.AddRange(gates);
 
+            //build the driver Substation
+            float driverY = cacheY + 4.5f;
+            Substation DriverSubstation = new Substation(new pos(-2, driverY));
+            DriverSubstation.isDriverHeader = true;
+
+            //What the actual fuck is broken about this?  why does it not work.  I have gone over everything
+            //there is not a single possible reason that it wouldnt connect to the driver substation, but it just doesnt.
+            
+            //the last header substation is closest to the driver, so connect the two
+            DriverSubstation.connections.Add(lastHeaderSubstation);
+            DriverSubstation.neighbors.Add(lastHeaderSubstation);
+            //lastHeaderSubstation.connections.Add(DriverSubstation);
+            //lastHeaderSubstation.neighbors.Add(DriverSubstation);
+
+
+
+            //if the gateConnectionHeader is close enough to the driver then connect them
+            if (gateConnectionHeader.position.y - driverY < 18)
+            {
+                DriverSubstation.connections.Add(gateConnectionHeader);
+                DriverSubstation.neighbors.Add(gateConnectionHeader);
+            }
+            else // otherwise add a chain of substations untill we reach it
+            {
+                Substation last = null;
+                for (int r = 0; r < gateY - driverY; r++)
+                {
+                    if (r % 18 == 0)
+                    {
+                        Substation substation = new Substation(new pos(-2, r + driverY));
+                        if (last != null)
+                        {
+                            substation.connections.Add(last);
+                            substation.neighbors.Add(last);
+                        }
+                        else
+                        {
+                            //substation.connections.Add(DriverSubstation);
+                            //substation.neighbors.Add(DriverSubstation);
+                            DriverSubstation.connections.Add(substation);
+                            DriverSubstation.neighbors.Add(substation);
+                        }
+                        
+                        last = substation;
+                        allSubstations.Add(substation);
+                    }
+                }
+                last.connections.Add(gateConnectionHeader);
+                last.neighbors.Add(gateConnectionHeader);
+                
+            }
+            
+            entities.AddRange(allSubstations);
+            entities.Add(DriverSubstation);
+            entities.Add(gateConnectionHeader);
+            
+            entities.AddRange(gates);
+            
             //Build front buffer passthrough
             int undergroundBeltPlacementCounter = 0;
             float FBy = cacheY + cacheLength + 1f;
@@ -423,7 +503,6 @@ namespace TheBluePrinter
                 {
                     entities.AddRange(new object[]
                     {
-                        
                         new Belt(new pos(FBx - h, FBy),4),
                         new Belt(new pos(FBx - h, FBy + 1f),4),
                         new Belt(new pos(FBx - h, FBy + 2f),4),
@@ -453,7 +532,6 @@ namespace TheBluePrinter
                 entities.Add(new Belt(new pos(FBx - belts - 2f - c, FBy + 1f), 4));
                 entities.Add(new Belt(new pos(FBx - belts - 2f - c, FBy + 2f), 4));
             }
-
 
             //build merge
             float mergeX = -3.5f - belts;
@@ -703,6 +781,11 @@ namespace TheBluePrinter
             return entities;
         }
 
+
+        /// <summary>
+        /// Will generate an infinity chest for every item and places it in a passive provider chest, for testing purposes.
+        /// </summary>
+        /// <returns></returns>
         public static List<object> BuildAllInfinityChests()
         {
             List<object> result = new List<object>();
@@ -729,8 +812,8 @@ namespace TheBluePrinter
 
         public struct pos
         {
-            float x;
-            float y;
+            public float x;
+            public float y;
             public pos(float x, float y)
             {
                 this.x = x;
@@ -852,12 +935,15 @@ namespace TheBluePrinter
             public pos position;
             public List<object> connections = new List<object>();
             public List<Substation> neighbors = new List<Substation>();
+            public bool isDriverHeader = false;  //Will add a hard coded connection to entity number 11, so the prebuilt printer driver can still be connected
 
             public Substation(pos position)
             {
                 this.position = position;
             }
         }
+
+
 
         public class InfinityChest
         {
@@ -896,10 +982,20 @@ namespace TheBluePrinter
             }
         }
         
-        public static string GetDriverString(int width)
+
+        /// <summary>
+        /// Prebuilt printer driver with all the circut logic, because im not figuring out that shit.
+        /// put it in the beggining so I dont have to worry about entity numbers and can just start the 
+        /// entity number at like 11.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public static string GetDriverString(int width, int height)
         {
-            int Xmodifier = 320;
-            int Ymodifier = -150 + ((width/2) * 10);
+            //just going to nudge it into place
+            int Xmodifier = 317;
+            int Ymodifier = -156 + ((width/2) * 10);
             object[] printerDriverComponents = new object[]
             {
                 "{\"entity_number\":1,\"name\":\"constant-combinator\",\"position\":{\"x\":",
@@ -956,9 +1052,7 @@ namespace TheBluePrinter
             {
                 if(printerDriverComponents[i] != null)
                 {
-                    
                     sb.Append(printerDriverComponents[i].ToString());
-                    
                 }
             }
             

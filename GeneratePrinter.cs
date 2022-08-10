@@ -88,7 +88,6 @@ namespace TheBluePrinter
                         sourceImage = (Bitmap)LoadedImage.Clone();
                         LoadedImage.Dispose();
                         LoadImagePreview();
-
                     }
                     else
                     {
@@ -121,9 +120,7 @@ namespace TheBluePrinter
                 int height = 0;
                 if (int.TryParse(WM.MainWindow.RICGTextBoxX.Text, out width) && int.TryParse(WM.MainWindow.RICGTextBoxY.Text, out height))
                 {
-                    
                     result = ImageAnalyzer.ResizeImage(result, width, height);
-
                 }
                 else
                 {
