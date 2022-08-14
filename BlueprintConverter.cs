@@ -146,7 +146,6 @@ namespace TheBluePrinter
         /// </summary>
         static string FormatJsonText(string jsonString)
         {
-            
             try
             {
                 var doc = JsonDocument.Parse(

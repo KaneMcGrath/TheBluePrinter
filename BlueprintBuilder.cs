@@ -40,10 +40,10 @@ namespace TheBluePrinter
                 underGroundType = "express-underground-belt";
                 splitterType = "express-splitter";
             }
-
+            
             List<Blueprint.entity> allEntities = new List<Blueprint.entity>();
             Dictionary<object, Blueprint.entity> connectionLookup = new Dictionary<object, Blueprint.entity>();
-
+            
             Dictionary<Substation, Blueprint.entity> neighborLookup = new Dictionary<Substation, Blueprint.entity>();
             foreach (object o in objects)
             {
@@ -134,6 +134,8 @@ namespace TheBluePrinter
                 }
             }
 
+          
+            
             foreach (Substation s in neighborLookup.Keys)
             {
                 if (s.neighbors.Count > 0)
@@ -155,7 +157,7 @@ namespace TheBluePrinter
                         {
                             connections[i] = connectionLookup[s.connections[i]].GetEntityNumber();
                         }
-                        connections[s.connections.Count] = 11;
+                        connections[s.connections.Count] = Blueprint.entity.lastEntityNumber + 11;
                         connectionLookup[s].components.Add(new Blueprint.connections(connections));
                     }
                     else 
@@ -170,6 +172,10 @@ namespace TheBluePrinter
                 }
             }
 
+            if (true)
+            {
+                
+            }
 
             string result = "{\"blueprint\": { \"icons\": [{\"signal\": { \"type\": \"item\",\"name\": \"express-transport-belt\"},\"index\": 1},{\"signal\": { \"type\": \"item\",\"name\": \"logistic-chest-requester\"},\"index\": 2}], \"entities\": [";
             StringBuilder stringBuilder = new StringBuilder();
@@ -1125,9 +1131,9 @@ namespace TheBluePrinter
                 entityNumbers[9],
                 ",\"circuit_id\":2},{\"entity_id\":",
                 entityNumbers[5],
-                "}]}}},"
+                "}]}}}"
             };
-
+            Log.New(entityNumbers[11].ToString(), System.Windows.Media.Colors.Green);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < printerDriverComponents.Length; i++)
             {
