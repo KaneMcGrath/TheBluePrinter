@@ -174,12 +174,7 @@ namespace TheBluePrinter
             string result = "{\"blueprint\": { \"icons\": [{\"signal\": { \"type\": \"item\",\"name\": \"express-transport-belt\"},\"index\": 1},{\"signal\": { \"type\": \"item\",\"name\": \"logistic-chest-requester\"},\"index\": 2}], \"entities\": [";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(result);
-            if (width > 0)
-            {
-                stringBuilder.Append(GetDriverString(width, height));
-                
-
-            }
+            
             for (int i = 0; i < allEntities.Count; i++)
             {
                 Blueprint.entity e = allEntities[i];
@@ -190,6 +185,10 @@ namespace TheBluePrinter
                     // result += ",";
                     stringBuilder.Append(',');
                 }
+            }
+            if (width > 0)
+            {
+                stringBuilder.Append(GetDriverString(width, height, Blueprint.entity.lastEntityNumber));
             }
             //result += "],\"item\": \"blueprint\",\"version\": 281479274168320}}";
             stringBuilder.Append("],\"item\": \"blueprint\",\"version\": 281479274168320}}");
@@ -406,9 +405,13 @@ namespace TheBluePrinter
             Substation DriverSubstation = new Substation(new pos(-2, driverY));
             DriverSubstation.isDriverHeader = true;
 
+            //WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY??????????????????????????????????????????????????????????????????????????????
             //What the actual fuck is broken about this?  why does it not work.  I have gone over everything
-            //there is not a single possible reason that it wouldnt connect to the driver substation, but it just doesnt.
-            
+            //there is not a single possible reason that it wouldnt connect to the driver substation specifically when it is a 64x64 map
+            //I have no idea why it is broken
+            //I looked at the result JSON and it should be valid
+            //but the game dosent connect the two when imported
+
             //the last header substation is closest to the driver, so connect the two
             DriverSubstation.connections.Add(lastHeaderSubstation);
             DriverSubstation.neighbors.Add(lastHeaderSubstation);
@@ -985,66 +988,144 @@ namespace TheBluePrinter
 
         /// <summary>
         /// Prebuilt printer driver with all the circut logic, because im not figuring out that shit.
-        /// put it in the beggining so I dont have to worry about entity numbers and can just start the 
-        /// entity number at like 11.
+        /// putting it at the end of the entities list now, because it looks like it might be causing problems.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public static string GetDriverString(int width, int height)
+        public static string GetDriverString(int width, int height, int lastEntityNumber = 0)
         {
             //just going to nudge it into place
             int Xmodifier = 317;
             int Ymodifier = -156 + ((width/2) * 10);
+            int[] entityNumbers = new int[12];
+            for (int i = 0; i < entityNumbers.Length; i++)
+            {
+                entityNumbers[i] = lastEntityNumber + i;
+            }
             object[] printerDriverComponents = new object[]
             {
-                "{\"entity_number\":1,\"name\":\"constant-combinator\",\"position\":{\"x\":",
+                ",{\"entity_number\":",
+                entityNumbers[1],
+                ",\"name\":\"constant-combinator\",\"position\":{\"x\":",
                 -317.5 + Xmodifier,
                 ",\"y\":",
                 155.5 + Ymodifier,
                 "},\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"count\":",
                 width.ToString(),
-                ",\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":1}]}}},{\"entity_number\":2,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":",
+                ",\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[2],
+                ",\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[2],
+                ",\"name\":\"arithmetic-combinator\",\"position\":{\"x\":",
                 -315 + Xmodifier,
                 ",\"y\":",
                 155.5 + Ymodifier,
-                "},\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":40,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":1},{\"entity_id\":8,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":3,\"circuit_id\":1}]}}},{\"entity_number\":3,\"name\":\"decider-combinator\",\"position\":{\"x\":",
+                "},\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":40,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[1],
+                "},{\"entity_id\":",
+                entityNumbers[8],
+                ",\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[3],
+                ",\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[3],
+                ",\"name\":\"decider-combinator\",\"position\":{\"x\":",
                 -313 + Xmodifier,
                 ",\"y\":",
                 155.5 + Ymodifier,
-                "},\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"copy_count_from_input\":true}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":2},{\"entity_id\":4,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":4,\"circuit_id\":1},{\"entity_id\":10,\"circuit_id\":1}]}}},{\"entity_number\":4,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                "},\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"copy_count_from_input\":true}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[2],
+                ",\"circuit_id\":2},{\"entity_id\":",
+                entityNumbers[4],
+                ",\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[4],
+                ",\"circuit_id\":1},{\"entity_id\":",
+                entityNumbers[1],
+                "0,\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[4],
+                ",\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
                 -313 + Xmodifier,
                 " ,\"y\":",
                 154.5 + Ymodifier,
-                " },\"direction\":6,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_constant\":1,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":3,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":3,\"circuit_id\":1}]}}},{\"entity_number\":5,\"name\":\"constant-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":6,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_constant\":1,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[3],
+                ",\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[3],
+                ",\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[5],
+                ",\"name\":\"constant-combinator\",\"position\":{\"x\":", 
                 -317.5 + Xmodifier,
                 " ,\"y\":",
                 156.5 + Ymodifier,
-                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-B\"},\"count\":3,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":11}]}}},{\"entity_number\":6,\"name\":\"constant-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-B\"},\"count\":3,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[11],
+                "}]}}},{\"entity_number\":",
+                entityNumbers[6],
+                ",\"name\":\"constant-combinator\",\"position\":{\"x\":", 
                 -317.5 + Xmodifier,
                 " ,\"y\":",
                 157.5 + Ymodifier,
-                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-S\"},\"count\":2,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":11}]}}},{\"entity_number\":7,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":6,\"control_behavior\":{\"filters\":[{\"signal\":{\"type\":\"virtual\",\"name\":\"signal-S\"},\"count\":2,\"index\":1}]},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[11],
+                "}]}}},{\"entity_number\":",
+                entityNumbers[7],
+                ",\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
                 -315 + Xmodifier,
                 " ,\"y\":",
                 157.5 + Ymodifier,
-                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":10,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":8,\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":9,\"circuit_id\":1}]}}},{\"entity_number\":8,\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":10,\"operation\":\"+\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[8],
+                ",\"circuit_id\":2}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[9],
+                ",\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[8],
+                ",\"name\":\"arithmetic-combinator\",\"position\":{\"x\":", 
                 -315 + Xmodifier,
                 " ,\"y\":",
                 156.5 + Ymodifier,
-                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":3,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":2,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":7,\"circuit_id\":1}]}}},{\"entity_number\":9,\"name\":\"decider-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":2,\"control_behavior\":{\"arithmetic_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"},\"second_constant\":3,\"operation\":\"*\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-each\"}}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[2],
+                ",\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[7],
+                ",\"circuit_id\":1}]}}},{\"entity_number\":",
+                entityNumbers[9],
+                ",\"name\":\"decider-combinator\",\"position\":{\"x\":", 
                 -313 + Xmodifier,
                 " ,\"y\":",
                 157.5 + Ymodifier,
-                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-D\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":7,\"circuit_id\":2},{\"entity_id\":10,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":10,\"circuit_id\":2},{\"entity_id\":11}]}}},{\"entity_number\":10,\"name\":\"decider-combinator\",\"position\":{\"x\":", 
+                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"second_signal\":{\"type\":\"virtual\",\"name\":\"signal-dot\"},\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-D\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[7],
+                ",\"circuit_id\":2},{\"entity_id\":",
+                entityNumbers[10],
+                ",\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[10],
+                ",\"circuit_id\":2},{\"entity_id\":",
+                entityNumbers[11],
+            "}]}}},{\"entity_number\":",
+                entityNumbers[10],
+                ",\"name\":\"decider-combinator\",\"position\":{\"x\":", 
                 -313 + Xmodifier,
                 " ,\"y\":",
                 156.5 + Ymodifier,
-                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"constant\":15,\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-A\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":3,\"circuit_id\":2},{\"entity_id\":9,\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":9,\"circuit_id\":2}]}}},{\"entity_number\":11,\"name\":\"substation\",\"position\":{\"x\":", 
+                " },\"direction\":2,\"control_behavior\":{\"decider_conditions\":{\"first_signal\":{\"type\":\"virtual\",\"name\":\"signal-T\"},\"constant\":15,\"comparator\":\"<\",\"output_signal\":{\"type\":\"virtual\",\"name\":\"signal-A\"},\"copy_count_from_input\":false}},\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[3],
+                ",\"circuit_id\":2},{\"entity_id\":",
+                entityNumbers[9],
+                ",\"circuit_id\":1}]},\"2\":{\"red\":[{\"entity_id\":",
+                entityNumbers[9],
+                ",\"circuit_id\":2}]}}},{\"entity_number\":",
+                entityNumbers[11],
+                ",\"name\":\"substation\",\"position\":{\"x\":", 
                 -311 + Xmodifier,
                 " ,\"y\":",
                 157 + Ymodifier,
-                " },\"connections\":{\"1\":{\"red\":[{\"entity_id\":6},{\"entity_id\":9,\"circuit_id\":2},{\"entity_id\":5}]}}},"
+                " },\"connections\":{\"1\":{\"red\":[{\"entity_id\":",
+                entityNumbers[6],
+                "},{\"entity_id\":",
+                entityNumbers[9],
+                ",\"circuit_id\":2},{\"entity_id\":",
+                entityNumbers[5],
+                "}]}}},"
             };
 
             StringBuilder sb = new StringBuilder();

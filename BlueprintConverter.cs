@@ -174,6 +174,10 @@ namespace TheBluePrinter
             }
             catch (Exception e)
             {
+                //if (e.Message.Contains("BytePositionInLine:"))
+                //{
+                //    int position = int.Parse(e.Message.Substring(e.Message.IndexOf("BytePositionInLine:") + 20));
+                //}
                 Log.New(e.Message, CC.red);
                 return jsonString;
             }
