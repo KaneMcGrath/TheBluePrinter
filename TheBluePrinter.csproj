@@ -198,12 +198,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cockandballtourture.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="frame_00_delay-0.06s.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Data\allnames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
