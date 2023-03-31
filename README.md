@@ -3,6 +3,10 @@
 The Blue Printer is a Windows desktop app for the game Factorio. It allows you to convert an image into a blueprint string of a "Belt Printer".  This will use requester chests to gather the items and assemble the image onto a belt.  This will then merge onto a bus that is already carrying items.
 Each pixel of the image will be converted to an item that closely matches the color of the pixel.
 
+![Comparison of image made of items vs origional image](/Images/Example.png)
+![Wind Waker ScreenShot in items](/Images/Example2.png)
+![Factorio Fish in items](/Images/FISH.png)
+
 ## Usage
 
 - Specify the path to your Factorio game folder (optional).
@@ -20,6 +24,8 @@ Each pixel of the image will be converted to an item that closely matches the co
 
 If you generate a large printer (about 50x50 or larger), the substation that connects all the combinators and front belts will not be connected to the rest of the printer. To fix this, you will need to connect a red wire to these two substations. See the included image for a demonstration.
 I have no idea why this happens, you will have to reconnect it back manually
+
+![Factorio Fish in items](/Images/BrokenExampleGuide.png)
 
 ## Item Selection
 
