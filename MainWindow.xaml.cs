@@ -18,8 +18,6 @@ namespace TheBluePrinter
     /// </summary>
     public partial class MainWindow : Window
     {
-        
-
         public MainWindow()
         {
             InitializeComponent();
@@ -37,14 +35,11 @@ namespace TheBluePrinter
             //Settings.SecondaryColor = TestingHelper.HextoColor("f79a76");
             WM.UpdateColors();
             
-
             //Dev Init Here
-            FactorioPathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest";
-            ImageSourcePathTextBox.Text = "C:\\Users\\Kane\\Desktop\\games\\Factorio_Latest\\data\\base\\graphics\\icons\\fish.png";
-            FormatFactorioIconCheckbox.IsChecked = true;
-            IconSourceResolutionSlider.Value = 32;
-            IconSourceResolutionSlider.Visibility = Visibility.Visible;
-            IconSourceResolutionSliderTickGrid.Visibility = Visibility.Visible;
+
+            //IconSourceResolutionSlider.Value = 32;
+            //IconSourceResolutionSlider.Visibility = Visibility.Visible;
+            //IconSourceResolutionSliderTickGrid.Visibility = Visibility.Visible;
         }
 
         private void OnClickImageSourcePath(object sender, RoutedEventArgs e)

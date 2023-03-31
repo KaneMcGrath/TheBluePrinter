@@ -417,14 +417,17 @@ namespace TheBluePrinter
             //I have no idea why it is broken
             //I looked at the result JSON and it should be valid
             //but the game dosent connect the two when imported
+            
 
             //the last header substation is closest to the driver, so connect the two
+            
             DriverSubstation.connections.Add(lastHeaderSubstation);
             DriverSubstation.neighbors.Add(lastHeaderSubstation);
+            //Log.New("Last Header Substation x:" + lastHeaderSubstation.position.x + " y:" + lastHeaderSubstation.position.y);
+            //Log.New("Driver Substation x:" + DriverSubstation.position.x + " y:" + DriverSubstation.position.y);
+            
             //lastHeaderSubstation.connections.Add(DriverSubstation);
             //lastHeaderSubstation.neighbors.Add(DriverSubstation);
-
-
 
             //if the gateConnectionHeader is close enough to the driver then connect them
             if (gateConnectionHeader.position.y - driverY < 18)
@@ -995,6 +998,7 @@ namespace TheBluePrinter
         /// <summary>
         /// Prebuilt printer driver with all the circut logic, because im not figuring out that shit.
         /// putting it at the end of the entities list now, because it looks like it might be causing problems.
+        /// still dident solve any of the problems this shit is broken
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -1434,7 +1438,7 @@ namespace TheBluePrinter
             public override string getJson()
             {
                 return "\"" + componentName + "\": \"" + leftOrRight + "\"";
-            }
+            } 
         }
 
         /// <summary>
